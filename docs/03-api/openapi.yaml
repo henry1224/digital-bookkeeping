@@ -1,0 +1,92 @@
+openapi: 3.0.3
+info:
+  title: JJ Steak Digital Bookkeeping API
+  version: 0.1.0
+  description: Internal API contract for Laravel + Inertia backoffice. Inertia pages may use web routes, but this spec defines payload contracts.
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+  /daily-sales:
+    post:
+      summary: Create daily sales summary
+      tags: [Finance]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DailySaleCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailySale'
+  /payment-requests:
+    post:
+      summary: Submit payment request
+      tags: [Finance]
+      responses:
+        '201': { description: Created }
+  /purchase-orders:
+    post:
+      summary: Create purchase order
+      tags: [Logistics]
+      responses:
+        '201': { description: Created }
+  /receivings:
+    post:
+      summary: Receive stock against PO
+      tags: [Logistics]
+      responses:
+        '201': { description: Created }
+  /journals:
+    post:
+      summary: Create manual journal
+      tags: [Accounting]
+      responses:
+        '201': { description: Created }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    Money:
+      type: string
+      pattern: '^\\d+(.\\d{1,2})?$'
+      example: '125000.00'
+    DailySaleCreate:
+      type: object
+      required: [outlet_id, sale_date, payment_breakdowns, lines]
+      properties:
+        outlet_id: { type: integer }
+        sale_date: { type: string, format: date }
+        notes: { type: string, nullable: true }
+        payment_breakdowns:
+          type: array
+          items:
+            type: object
+            required: [method, amount]
+            properties:
+              method: { type: string, enum: [cash, debit, credit, qris, transfer] }
+              amount: { $ref: '#/components/schemas/Money' }
+        lines:
+          type: array
+          items:
+            type: object
+            required: [item_id, qty, unit_price_amount]
+            properties:
+              item_id: { type: integer }
+              qty: { type: string, example: '2.00' }
+              unit_price_amount: { $ref: '#/components/schemas/Money' }
+    DailySale:
+      allOf:
+        - $ref: '#/components/schemas/DailySaleCreate'
+        - type: object
+          properties:
+            id: { type: integer }
+            status: { type: string, enum: [draft, submitted, posted, cancelled] }
