@@ -2,7 +2,7 @@
 
 ## Goal
 
-Record daily outlet sales, manage cash/bank movement, payment requests, approvals, and AP/AR visibility.
+Record daily outlet sales, manage cash/bank movement, payment requests, approvals, non-stock expenses, and AP visibility.
 
 ## Features
 
@@ -12,8 +12,8 @@ Record daily outlet sales, manage cash/bank movement, payment requests, approval
 4. Approval Center
 5. List Expenditure
 6. Payment History
-7. AP/AR Reports
-8. Aging AP/AR
+7. AP Reports
+8. Purchase Non Stock via payment request + expense account
 
 ## Acceptance Criteria
 
@@ -22,4 +22,5 @@ Record daily outlet sales, manage cash/bank movement, payment requests, approval
 3. Payment request follows approval route.
 4. Approved payment can be executed once.
 5. Payment execution creates bank transaction and journal.
-6. AP/AR report matches source transactions.
+6. AP report matches source transactions.
+7. Non-stock expense payment requires `expense_account_id` and posts expense vs bank on execution.

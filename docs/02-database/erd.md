@@ -1,10 +1,20 @@
-# ERD Sketch
+# Sketsa ERD
 
-This is a first-pass schema blueprint. Final implementation should be expressed in Laravel migrations.
+Blueprint schema awal. Implementasi final harus ditulis sebagai Laravel migrations.
+
+## Catatan Keputusan
+
+1. Primary key default: `BIGINT` auto-increment.
+2. Foreign key default: `foreignId`/`BIGINT` dengan suffix `_id`.
+3. Uang: `DECIMAL(18,2)`.
+4. Manufacturing table belum masuk MVP.
+5. Central Kitchen adalah outlet/storage pada MVP.
+6. Tabel `outlet_configs`, `posting_rules`, dan `audit_logs` wajib ada untuk menutup konfigurasi dan traceability.
 
 ```mermaid
 erDiagram
     outlets ||--o{ users : assigned
+    outlets ||--o{ outlet_configs : configures
     outlets ||--o{ daily_sales : records
     outlets ||--o{ stock_balances : owns
     outlets ||--o{ bank_transactions : owns
@@ -16,7 +26,9 @@ erDiagram
     unit_of_measures ||--o{ items : base_uom
     suppliers ||--o{ purchase_orders : receives
     bank_accounts ||--o{ bank_transactions : records
+    accounts ||--o{ accounts : parent
     accounts ||--o{ journal_entries : posts
+    accounts ||--o{ posting_rules : maps
 
     daily_sales ||--o{ daily_sale_lines : contains
     daily_sales ||--o{ journals : source
@@ -45,27 +57,37 @@ erDiagram
     period_closings ||--o{ journals : locks
 ```
 
-## Core Tables
+## Tabel Inti MVP
 
 1. outlets
-2. users
-3. roles, permissions, role_user, permission_role
-4. item_groups
-5. unit_of_measures
-6. items
-7. suppliers
-8. customers
+2. outlet_configs
+3. users
+4. roles, permissions, role_user, permission_role
+5. item_groups
+6. unit_of_measures
+7. items
+8. suppliers
 9. accounts (COA)
-10. bank_accounts
-11. daily_sales, daily_sale_lines
-12. payment_requests, payment_approvals
-13. bank_transactions
-14. purchase_orders, purchase_order_lines
-15. receivings, receiving_lines
-16. stock_balances, stock_movements
-17. stock_counts, stock_count_lines
-18. stock_adjustments, stock_adjustment_lines
-19. recipes, recipe_ingredients
-20. journals, journal_entries
-21. period_closings
-22. audit_logs
+10. posting_rules
+11. bank_accounts
+12. daily_sales, daily_sale_lines
+13. payment_requests, payment_approvals
+14. bank_transactions
+15. purchase_orders, purchase_order_lines
+16. receivings, receiving_lines
+17. stock_balances, stock_movements
+18. stock_counts, stock_count_lines
+19. stock_adjustments, stock_adjustment_lines
+20. recipes, recipe_ingredients
+21. journals, journal_entries
+22. period_closings
+23. audit_logs
+
+## Disiapkan untuk Fase 2
+
+1. production_orders
+2. raw_material_issues
+3. finished_good_receipts
+4. delivery_orders
+5. internal_invoices
+6. customers, customer_invoices, customer_receipts

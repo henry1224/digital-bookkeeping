@@ -8,7 +8,7 @@ Control purchase, receiving, stock, ingredient usage, recipe, opname, adjustment
 
 1. Outlet Request
 2. Purchase Order Stock
-3. Purchase Order Non-Stock
+3. Purchase Non Stock handoff to Finance payment request
 4. Receiving Stock
 5. Ingredient Usage
 6. Stock Opname
@@ -17,9 +17,7 @@ Control purchase, receiving, stock, ingredient usage, recipe, opname, adjustment
 9. Recipe/Ingredient
 10. Stock Report
 11. Stock Card
-12. Reconcile HPP
-13. Flash Cost
-14. Closing Stock
+12. Closing Stock
 
 ## Acceptance Criteria
 
@@ -30,3 +28,4 @@ Control purchase, receiving, stock, ingredient usage, recipe, opname, adjustment
 5. Opname variance generates adjustment draft.
 6. Approved adjustment updates stock and journal.
 7. Closing stock locks inventory period.
+8. Flash Cost dan Reconcile HPP detail masuk Fase 2.

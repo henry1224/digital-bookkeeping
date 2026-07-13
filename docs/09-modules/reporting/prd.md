@@ -17,8 +17,8 @@ Provide decision-ready dashboards and analysis for cashflow, inventory, and fina
 9. Stock Valuation
 10. Stock Variance
 11. Waste & Loss
-12. Reconcile HPP
-13. Flash Cost
+12. Reconcile HPP (Fase 2)
+13. Flash Cost (Fase 2)
 
 ## Acceptance Criteria
 
