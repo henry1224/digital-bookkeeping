@@ -45,21 +45,27 @@
    - Neraca
    - Cashflow support
    - Inventory valuation
+   - Flash Cost (estimasi HPP dari resep vs usage aktual)
+   - Reconcile HPP
    - Export
 
 ## Fase 2 (Penyempurnaan kontrol & analisa)
 
 1. Customer/AR lifecycle, aging AR, dan **aging AP**.
 2. AR/AP Intra Outlet (via Transfer Antar Outlet: satu transaksi membentuk AR di satu sisi, AP di sisi lain).
-3. Flash Cost dan Reconcile HPP detail.
+3. Fixed Asset + penyusutan.
 4. Manufacturing Central Kitchen: production order, raw material issue, finished good receipt, delivery order, internal invoice.
+
+Catatan: Flash Cost & Reconcile HPP dinaikkan ke MVP (lihat Reports).
 
 ## Fase 3 (Optimalisasi & otomasi lanjutan)
 
 1. Budgeting vs Actual per outlet.
 2. Bank Reconciliation (rekonsiliasi rekening koran) dan Direct bank API integration.
 3. Dashboard analitik.
-4. Full tax modules / integrasi pajak (e-Faktur, e-Bupot).
+4. Full tax modules / integrasi pajak (e-Faktur, e-Bupot, PPN/PPh).
+
+Catatan: Payroll di luar sistem (HR terpisah), masuk lewat jurnal manual.
 
 ## Definition of Done Modul Finansial
 

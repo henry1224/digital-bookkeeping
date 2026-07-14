@@ -16,9 +16,12 @@ Patokan review: `jj-steak/proposal/ss` dan `Spesifikasi_Modul_Aplikasi_Keuangan.
 | Manufacturing | Fase 2, bukan MVP | Samakan semua dokumen dan proposal. |
 | Customer/AR | Fase 2 | Keluarkan dari tabel inti MVP; sisakan reserved note. |
 | Purchase Non Stock | MVP | Reuse `payment_requests` + `expense_account_id`; tidak perlu tabel baru dulu. |
-| Flash Cost | Fase 2 | Detail rumus disiapkan setelah usage dan stock opname stabil. |
-| Reconcile HPP | Fase 2 | Detail input/output disiapkan setelah closing stock stabil. |
-| Multi Outlet | Ada outlet scoping, policy bisnis belum tajam | Putuskan bank, stock, COA, report per outlet vs konsolidasi. |
+| Flash Cost | DIKUNCI: MVP | F&B butuh monitoring HPP harian; report estimasi dari resep vs usage aktual. |
+| Reconcile HPP | DIKUNCI: MVP | Rekonsiliasi HPP masuk rilis 1 bersama closing stock. |
+| Multi Outlet | DIKUNCI: per-outlet penuh | Bank, stock, COA, report per outlet + konsolidasi. Semua tabel transaksi wajib `outlet_id`. |
+| Tax | DIKUNCI: PB1 MVP | PB1 per-outlet di MVP; PPN/PPh/e-Faktur Fase 3. |
+| Fixed Asset | DIKUNCI: Fase 2 | Modul aset tetap + penyusutan Fase 2. |
+| Payroll | DIKUNCI: di luar sistem | Gaji pakai HR terpisah; masuk lewat jurnal manual. |
 | RBAC | DIKUNCI: superset 12 role | Tambah Costcontrol & Finance staff dari Excel; pertahankan Outlet Manager & Auditor. Sudah di `rbac-matrix.md`. |
 | Outlet Request | DIKUNCI: masuk MVP | `purchase_requests`/`purchase_request_lines` ditambahkan; PO bisa dari request atau open PO. |
 
