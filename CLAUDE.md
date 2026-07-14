@@ -55,8 +55,9 @@ JJ Steak Digital Bookkeeping — web backoffice untuk kontrol keuangan, inventor
 ## Konvensi Inertia + Vue
 
 - Pages berada di `resources/js/Pages/<Module>/<Page>.vue`.
+- UI kit standar: **shadcn-vue** (bukan shadcn/ui React). Primitif di `resources/js/Components/ui`, ditambah via `npx shadcn-vue@latest add`. Lihat `docs/04-design/design-system.md`.
 - Shared components berada di `resources/js/Components`.
-- Domain components berada di `resources/js/Features/<module>`.
+- Domain components berada di `resources/js/Features/<module>` — disusun dari primitif shadcn-vue, tidak menulis ulang.
 - Gunakan TypeScript types yang dibuat/diselaraskan dari API resources.
 - Form memakai Inertia `useForm` plus server-side validation errors.
 - Table memakai pola filter/sort/pagination yang konsisten.
