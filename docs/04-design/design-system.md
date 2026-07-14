@@ -1,5 +1,29 @@
 # Design System
 
+## UI Kit: shadcn-vue
+
+Standar komponen memakai **shadcn-vue** (`shadcn-vue.com`) — port Vue 3 resmi dari shadcn/ui,
+cocok dengan stack Inertia + Vue + Tailwind. Bukan `shadcn/ui` (React-only).
+
+Aturan:
+
+1. Komponen ditambahkan sebagai source ke `resources/js/Components/ui` via CLI (`npx shadcn-vue@latest add <komponen>`), bukan sebagai dependency runtime.
+2. Design token di dokumen ini (colors, radius, spacing) dipetakan ke CSS variable shadcn-vue (`--primary`, `--destructive`, dll) saat `init`.
+3. Komponen domain (`resources/js/Features/<module>`) menyusun dari primitif shadcn-vue, tidak menulis ulang primitif.
+4. Jangan modifikasi file primitif hasil generate kecuali untuk token/tema; variasi dibuat via composition.
+
+Setup (dijalankan saat app sudah di-scaffold, belum sekarang):
+
+```bash
+npx shadcn-vue@latest init      # buat components.json + token
+npx shadcn-vue@latest add button input table dialog badge select
+```
+
+Skill AI pendamping (opsional, setelah `components.json` ada): `npx skills add shadcn/ui`
+— injeksi konvensi komposisi ke asisten. Catatan: skill ini menjalankan shell directive saat
+install; review dulu. Karena registry skill saat ini React-first, konfirmasi ketersediaan varian
+Vue sebelum dipakai; kalau belum ada, cukup ikuti aturan di dokumen ini.
+
 ## Prinsip
 
 1. Kejelasan finansial lebih penting daripada dekorasi.
