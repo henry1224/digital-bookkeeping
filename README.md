@@ -1,15 +1,15 @@
-# Dokumentasi Digital Bookkeeping
+# JJ Steak Digital Bookkeeping
 
-Kumpulan dokumentasi siap-AI untuk aplikasi backoffice JJ Steak.
+Backoffice web untuk kontrol keuangan, inventory, dan akuntansi multi-outlet JJ Steak.
 
 ## Stack
 
 - Backend: Laravel versi terbaru
 - Frontend: Inertia.js + Vue 3 + TypeScript
 - Database: PostgreSQL
-- Styling: Tailwind CSS + komponen primitif
-- Auth: gaya Laravel Breeze/Jetstream, disesuaikan untuk RBAC
-- Tests: Pest/PHPUnit + Vitest + Playwright
+- Styling: Tailwind CSS + shadcn-vue
+- Auth: Laravel starter kit + Fortify, disesuaikan untuk RBAC
+- Tests: PHPUnit + phpstan + eslint/typecheck (Pest/Playwright dapat ditambah saat flow stabil)
 
 ## Status Keputusan Fondasi
 
@@ -20,7 +20,23 @@ Kumpulan dokumentasi siap-AI untuk aplikasi backoffice JJ Steak.
 - Central Kitchen diperlakukan sebagai outlet/storage untuk inventory.
 - Approval matrix menjadi seed default yang bisa dikonfigurasi.
 - PB1/tax dikonfigurasi per outlet.
-- HPP MVP diposting dari actual ingredient usage; recipe dipakai untuk pembanding standar.
+- HPP MVP diposting dari actual ingredient usage; recipe dipakai untuk Flash Cost dan Reconcile HPP.
+- Multi-outlet per-outlet penuh: bank, stock, COA saldo, dan report per outlet + konsolidasi.
+
+## Setup Lokal
+
+```bash
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+# siapkan PostgreSQL database: digital_bookkeeping
+php artisan migrate
+npm run dev
+php artisan serve
+```
+
+Default database: PostgreSQL (`digital_bookkeeping`). Jika pakai Herd/DB GUI, buat database dulu sebelum migrate.
 
 ## Urutan Baca untuk Pengembangan AI
 
