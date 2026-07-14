@@ -102,7 +102,7 @@ Ikuti `docs/07-operations/git-workflow.md`. Ringkas:
   - Fitur: `feature/{phase}/{nama-menu}` (`{phase}` = `mvp`/`fase-2`/`fase-3`)
   - Bug: `bug/{nama-bug}`
   - Perbaikan non-bug: `fix/{nama-perbaikan}`
-- Siklus: commit → merge `--no-ff` ke `master` → push → hapus branch → branch baru dari `master` terbaru.
+- Siklus: commit → merge `--no-ff` ke `master` → push → **branch tugas tetap disimpan** → branch baru dari `master` terbaru.
 - Satu branch = satu tugas.
 
 ## Jangan Lakukan

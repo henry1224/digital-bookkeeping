@@ -8,8 +8,9 @@ Base branch: `master`. Semua kerja lewat branch, tidak commit langsung ke `maste
 2. Buat branch baru dari `master` yang up-to-date.
 3. Kerjakan tugas → commit.
 4. Merge ke `master` (no-ff) → push `master`.
-5. Hapus branch tugas. Branch baru berikutnya selalu dari `master` terbaru.
-6. Satu branch = satu tugas. Jangan campur dokumen, feature, dan bug dalam satu branch.
+5. **Jangan hapus branch tugas setelah merge.** Branch tetap disimpan sebagai arsip pekerjaan.
+6. Branch baru berikutnya selalu dari `master` terbaru.
+7. Satu branch = satu tugas. Jangan campur dokumen, feature, dan bug dalam satu branch.
 
 ## Penamaan Branch
 
@@ -59,12 +60,13 @@ git merge --no-ff document/nama-perbaikan -m "merge: docs nama-perbaikan"
 # 4. push master
 git push origin master
 
-# 5. bersihkan
-git branch -d document/nama-perbaikan
+# 5. branch tugas tetap disimpan sebagai arsip
+# Jangan jalankan `git branch -d document/nama-perbaikan` kecuali user meminta bersih-bersih branch.
 ```
 
 ## Catatan
 
 - `--no-ff` dipakai agar tiap tugas punya merge commit sebagai batas jelas di history.
+- Branch tugas yang sudah merge tetap disimpan. Hapus branch hanya jika user eksplisit meminta cleanup.
 - Kalau ada remote `main` (bukan `master`), ganti kata `master` di atas dengan branch default aktual repo (`git symbolic-ref --short HEAD` saat fresh clone).
 - Financial transactions tidak boleh hard-delete (CLAUDE.md) — aturan ini soal kode, bukan git; tetap berlaku terpisah.
