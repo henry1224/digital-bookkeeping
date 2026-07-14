@@ -93,6 +93,96 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Journal'
+  /purchase-requests:
+    post:
+      summary: Membuat Outlet Request (permintaan bahan sebelum PO)
+      tags: [Logistics]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PurchaseRequestCreate'
+      responses:
+        '201':
+          description: Berhasil dibuat
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseRequest'
+  /stock-usages:
+    post:
+      summary: Mencatat pemakaian bahan (ingredient usage) harian
+      tags: [Logistics]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StockUsageCreate'
+      responses:
+        '201':
+          description: Berhasil dibuat
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockUsage'
+  /stock-adjustments:
+    post:
+      summary: Mencatat penyesuaian stock (in/out) dari opname atau manual
+      tags: [Logistics]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StockAdjustmentCreate'
+      responses:
+        '201':
+          description: Berhasil dibuat
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockAdjustment'
+  /period-closings:
+    post:
+      summary: Menutup periode (stock lalu accounting)
+      tags: [Accounting]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PeriodClosingCreate'
+      responses:
+        '201':
+          description: Berhasil ditutup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PeriodClosing'
+  /period-closings/{id}/reopen:
+    post:
+      summary: Membuka kembali periode tertutup (hanya Owner)
+      tags: [Accounting]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PeriodReopen'
+      responses:
+        '200':
+          description: Berhasil dibuka kembali
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PeriodClosing'
 components:
   securitySchemes:
     bearerAuth:
@@ -248,3 +338,103 @@ components:
             status: { type: string, enum: [draft, pending_approval, posted, reversed, cancelled] }
             total_debit_amount: { $ref: '#/components/schemas/Money' }
             total_credit_amount: { $ref: '#/components/schemas/Money' }
+    PurchaseRequestCreate:
+      type: object
+      required: [outlet_id, request_date, lines]
+      properties:
+        outlet_id: { type: integer, format: int64 }
+        request_date: { type: string, format: date }
+        priority: { type: string, enum: [normal, urgent], default: normal }
+        note: { type: string, nullable: true }
+        lines:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [item_id, qty, uom_id]
+            properties:
+              item_id: { type: integer, format: int64 }
+              qty: { $ref: '#/components/schemas/Quantity' }
+              uom_id: { type: integer, format: int64 }
+              note: { type: string, nullable: true }
+    PurchaseRequest:
+      allOf:
+        - $ref: '#/components/schemas/PurchaseRequestCreate'
+        - type: object
+          properties:
+            id: { type: integer, format: int64 }
+            request_no: { type: string }
+            status: { type: string, enum: [draft, submitted, approved, converted, cancelled] }
+    StockUsageCreate:
+      type: object
+      required: [outlet_id, usage_date, lines]
+      properties:
+        outlet_id: { type: integer, format: int64 }
+        usage_date: { type: string, format: date }
+        note: { type: string, nullable: true }
+        lines:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [item_id, qty]
+            properties:
+              item_id: { type: integer, format: int64 }
+              qty: { $ref: '#/components/schemas/Quantity' }
+    StockUsage:
+      allOf:
+        - $ref: '#/components/schemas/StockUsageCreate'
+        - type: object
+          properties:
+            id: { type: integer, format: int64 }
+            usage_no: { type: string }
+            status: { type: string, enum: [draft, submitted, posted, cancelled] }
+            total_cost_amount: { $ref: '#/components/schemas/Money' }
+    StockAdjustmentCreate:
+      type: object
+      required: [outlet_id, adjustment_date, direction, lines]
+      properties:
+        outlet_id: { type: integer, format: int64 }
+        adjustment_date: { type: string, format: date }
+        direction: { type: string, enum: [in, out] }
+        stock_count_id: { type: integer, format: int64, nullable: true, description: 'Rujukan opname bila dari selisih' }
+        lines:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [item_id, qty, reason]
+            properties:
+              item_id: { type: integer, format: int64 }
+              qty: { $ref: '#/components/schemas/Quantity' }
+              reason: { type: string, enum: [rusak, hilang, sample, opname, lainnya] }
+              note: { type: string, nullable: true }
+    StockAdjustment:
+      allOf:
+        - $ref: '#/components/schemas/StockAdjustmentCreate'
+        - type: object
+          properties:
+            id: { type: integer, format: int64 }
+            adjustment_no: { type: string }
+            status: { type: string, enum: [draft, submitted, approved, posted, rejected, cancelled] }
+    PeriodClosingCreate:
+      type: object
+      required: [period_year, period_month, scope]
+      properties:
+        period_year: { type: integer, example: 2026 }
+        period_month: { type: integer, minimum: 1, maximum: 12 }
+        outlet_id: { type: integer, format: int64, nullable: true, description: 'null untuk konsolidasi' }
+        scope: { type: string, enum: [stock, accounting], description: 'Urutan wajib: stock dulu, baru accounting' }
+    PeriodClosing:
+      allOf:
+        - $ref: '#/components/schemas/PeriodClosingCreate'
+        - type: object
+          properties:
+            id: { type: integer, format: int64 }
+            status: { type: string, enum: [open, closing, closed, reopened] }
+            closed_at: { type: string, format: date-time, nullable: true }
+    PeriodReopen:
+      type: object
+      required: [reopen_reason]
+      properties:
+        reopen_reason: { type: string, minLength: 5, description: 'Wajib; hanya Owner yang boleh approve reopen' }
