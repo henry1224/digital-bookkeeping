@@ -47,18 +47,19 @@
    - Inventory valuation
    - Export
 
-## Fase 2 / Setelah MVP
+## Fase 2 (Penyempurnaan kontrol & analisa)
 
-1. Manufacturing Central Kitchen
-2. Production order
-3. Raw material issue
-4. Finished good receipt
-5. Delivery order
-6. Internal invoice
-7. Direct bank API integration
-8. Full tax modules
-9. Customer/AR lifecycle dan aging AR
-10. Flash Cost dan Reconcile HPP detail
+1. Customer/AR lifecycle, aging AR, dan **aging AP**.
+2. AR/AP Intra Outlet (via Transfer Antar Outlet: satu transaksi membentuk AR di satu sisi, AP di sisi lain).
+3. Flash Cost dan Reconcile HPP detail.
+4. Manufacturing Central Kitchen: production order, raw material issue, finished good receipt, delivery order, internal invoice.
+
+## Fase 3 (Optimalisasi & otomasi lanjutan)
+
+1. Budgeting vs Actual per outlet.
+2. Bank Reconciliation (rekonsiliasi rekening koran) dan Direct bank API integration.
+3. Dashboard analitik.
+4. Full tax modules / integrasi pajak (e-Faktur, e-Bupot).
 
 ## Definition of Done Modul Finansial
 

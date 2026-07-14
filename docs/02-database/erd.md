@@ -25,6 +25,8 @@ erDiagram
     item_groups ||--o{ items : groups
     unit_of_measures ||--o{ items : base_uom
     suppliers ||--o{ purchase_orders : receives
+    purchase_requests ||--o{ purchase_request_lines : contains
+    purchase_requests ||--o{ purchase_orders : converts_to
     bank_accounts ||--o{ bank_transactions : records
     accounts ||--o{ accounts : parent
     accounts ||--o{ journal_entries : posts
@@ -47,6 +49,14 @@ erDiagram
     items ||--o{ stock_movements : moves
     items ||--o{ recipe_ingredients : ingredient
     items ||--o{ recipes : sellable_item
+    items ||--o{ stock_usage_lines : consumed
+
+    stock_usages ||--o{ stock_usage_lines : contains
+    stock_usages ||--o{ stock_movements : creates
+    stock_usages ||--o{ journals : source
+
+    period_closings ||--o{ inventory_snapshots : freezes
+    period_closings ||--o{ report_snapshots : freezes
 
     stock_counts ||--o{ stock_count_lines : contains
     stock_adjustments ||--o{ stock_adjustment_lines : contains
@@ -73,15 +83,19 @@ erDiagram
 12. daily_sales, daily_sale_lines
 13. payment_requests, payment_approvals
 14. bank_transactions
-15. purchase_orders, purchase_order_lines
-16. receivings, receiving_lines
-17. stock_balances, stock_movements
-18. stock_counts, stock_count_lines
-19. stock_adjustments, stock_adjustment_lines
-20. recipes, recipe_ingredients
-21. journals, journal_entries
-22. period_closings
-23. audit_logs
+15. purchase_requests, purchase_request_lines
+16. purchase_orders, purchase_order_lines
+17. receivings, receiving_lines
+18. stock_balances, stock_movements
+19. stock_usages, stock_usage_lines
+20. stock_counts, stock_count_lines
+21. stock_adjustments, stock_adjustment_lines
+22. recipes, recipe_ingredients
+23. journals, journal_entries
+24. period_closings
+25. inventory_snapshots
+26. report_snapshots
+27. audit_logs
 
 ## Disiapkan untuk Fase 2
 

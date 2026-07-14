@@ -1,41 +1,51 @@
-# Domain Model
+# Model Domain
 
-## Bounded Contexts
+## Bounded Context
 
 ### Master Data
-Owns reference data used by all modules.
+
+Mengelola data referensi yang dipakai semua modul.
 
 Entities: Outlet, Item, ItemGroup, Supplier, Customer, BankAccount, Account(COA), UnitOfMeasure, User, Role, Permission.
 
 ### Finance
-Owns cash/bank movement, payment requests, AP/AR visibility, and daily sales recording.
+
+Mengelola cash/bank movement, payment request, visibility AP/AR, dan pencatatan daily sales.
 
 Entities: DailySale, DailySaleLine, BankTransaction, PaymentRequest, PaymentApproval, Expenditure, Payable, Receivable.
 
 ### Logistics
-Owns purchase orders, receiving, stock, ingredient usage, stock opname, adjustment, recipe.
+
+Mengelola purchase order, receiving, stock, ingredient usage, stock opname, adjustment, dan recipe.
 
 Entities: PurchaseOrder, PurchaseOrderLine, Receiving, ReceivingLine, StockMovement, StockBalance, StockCount, StockAdjustment, Recipe, RecipeIngredient.
 
 ### Manufacturing
-Optional phase for central kitchen.
 
-Entities: ProductionOrder, RawMaterialIssue, FinishedGoodReceipt, DeliveryOrder, InternalInvoice.
+Fase opsional setelah MVP untuk Central Kitchen production.
+
+Entities fase 2: ProductionOrder, RawMaterialIssue, FinishedGoodReceipt, DeliveryOrder, InternalInvoice.
+
+Catatan MVP: Central Kitchen tetap boleh ada sebagai outlet/storage untuk stock dan purchasing, tetapi belum memiliki workflow produksi.
 
 ### Accounting
-Owns journal, ledger, trial balance, financial statements, period closing.
+
+Mengelola journal, ledger, trial balance, financial statements, dan period closing.
 
 Entities: Journal, JournalEntry, LedgerBalance, TrialBalance, PeriodClosing.
 
 ### Reporting
-Read models, dashboards, exports.
+
+Mengelola read model, dashboard, dan export.
 
 Entities: ReportSnapshot, ExportJob, ScheduledReport.
 
-## Cross-Context Rules
+## Aturan Lintas Context
 
-1. Source modules create accounting journals through Accounting service.
-2. Accounting does not mutate source transactions.
-3. Source transaction and journal creation must happen in one database transaction.
-4. Reporting reads from source tables and accounting tables; it must not own business transactions.
-5. Closed period blocks source context changes unless period is reopened.
+1. Source modules membuat accounting journals melalui Accounting service.
+2. Accounting tidak mengubah source transactions.
+3. Source transaction dan journal creation harus terjadi dalam satu database transaction.
+4. Reporting membaca source tables dan accounting tables; reporting tidak memiliki business transaction.
+5. Closed period memblokir perubahan source context kecuali period direopen.
+6. Semua financial transaction harus journaled atau ditandai eksplisit `non_posting` dengan reason.
+7. Manufacturing entities dan stock movement production disiapkan untuk fase 2, bukan MVP.

@@ -22,6 +22,8 @@
 18. EmptyState
 19. LoadingSkeleton
 20. FormSection
+21. PeriodStatusBanner
+22. RequiredLabel
 
 ## Domain Components
 
@@ -35,3 +37,15 @@
 8. RecipeIngredientEditor
 9. ApprovalActionBar
 10. PeriodStatusBanner
+11. OutletConfigForm
+12. CoaTreeTable
+13. MoneySummaryCard
+
+## Aturan Reuse
+
+1. Jangan buat komponen domain jika shared component cukup.
+2. Jangan buat abstraction untuk satu halaman saja.
+3. DataTable harus menjadi pola utama untuk list page.
+4. AuditLogPanel wajib tersedia di detail financial transaction.
+5. ApprovalTimeline wajib tersedia di approval-based transaction.
+6. JournalEntriesEditor harus memvalidasi total debit = total credit di UI sebelum submit, tetapi server tetap sumber kebenaran.

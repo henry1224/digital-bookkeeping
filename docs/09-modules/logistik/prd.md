@@ -21,7 +21,8 @@ Control purchase, receiving, stock, ingredient usage, recipe, opname, adjustment
 
 ## Acceptance Criteria
 
-1. PO can be approved before receiving.
+1. PO dapat dibuat dari Outlet Request (converted) atau sebagai open PO langsung.
+2. PO can be approved before receiving.
 2. Receiving can be partial.
 3. Receiving updates stock and AP.
 4. Ingredient usage reduces stock and posts HPP.
