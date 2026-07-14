@@ -1,18 +1,19 @@
 # Design System
 
-## Principles
+## Prinsip
 
-1. Financial clarity over decoration.
-2. Tables must be readable and exportable.
-3. Important states must be explicit: Draft, Submitted, Approved, Posted, Closed.
-4. Destructive actions need confirmation and audit reason.
-5. UI must work well on desktop first.
+1. Kejelasan finansial lebih penting daripada dekorasi.
+2. Table harus mudah dibaca dan mudah diexport.
+3. State penting harus eksplisit: Draft, Submitted, Approved, Posted, Closed.
+4. Destructive action butuh confirmation dan audit reason.
+5. UI harus optimal untuk desktop terlebih dahulu.
+6. Form keuangan harus mencegah input ambigu, terutama uang, tanggal, outlet, dan akun.
 
 ## Design Tokens
 
 ### Colors
 
-| Token | Hex | Usage |
+| Token | Hex | Penggunaan |
 |---|---|---|
 | primary | #1E40AF | Main action, active navigation |
 | primary-dark | #1E3A8A | Hover primary |
@@ -37,13 +38,13 @@
 
 ### Spacing
 
-Use 4px base scale: 4, 8, 12, 16, 24, 32, 48.
+Gunakan 4px base scale: 4, 8, 12, 16, 24, 32, 48.
 
 ### Radius
 
 Small 4px, medium 8px, large 12px.
 
-## Component Standards
+## Standar Komponen
 
 ### Button
 
@@ -54,32 +55,42 @@ States: default, hover, disabled, loading.
 ### Input
 
 Types: text, number, currency, date, select, textarea, file upload.
-Every input must have label and validation error area.
+Setiap input harus memiliki label dan validation error area.
+Required field harus ditandai dengan teks, bukan hanya warna.
+
+### Money Input
+
+1. Display format: `Rp 1.234.567`.
+2. Submit value: string decimal, contoh `1234567.00`.
+3. Jangan submit float JavaScript.
+4. Error harus jelas jika format invalid.
 
 ### Table
 
-Required features for data tables:
+Fitur wajib untuk data table:
 
 1. Search
 2. Filter
 3. Sort
 4. Pagination
-5. Export if report-like
-6. Row actions at right
+5. Export jika report-like
+6. Row actions di kanan
 7. Empty state
 8. Loading skeleton
+9. Ringkasan total untuk table keuangan bila relevan
 
 ### Status Badge
 
-Use consistent labels:
+Gunakan label konsisten:
 
 - Draft: gray
 - Submitted/Pending: warning
 - Approved/Posted: success
 - Rejected/Cancelled: danger
 - Closed: neutral dark
+- Reopened: warning
 
-## Layout Templates
+## Template Layout
 
 1. Login page
 2. Dashboard layout: sidebar + topbar + content
@@ -88,10 +99,12 @@ Use consistent labels:
 5. Detail page: summary card + tabs + audit trail
 6. Report page: filters + summary cards + table/chart + export actions
 
-## Form Rules
+## Aturan Form
 
-1. Primary action button on bottom right.
-2. Cancel/back action on bottom left.
-3. Required fields marked with text, not only color.
-4. Save draft where flow supports draft.
-5. Confirmation required for posting, approving, rejecting, closing, deleting.
+1. Primary action button di kanan bawah.
+2. Cancel/back action di kiri bawah.
+3. Required fields ditandai dengan teks, bukan hanya warna.
+4. Save draft tersedia pada flow yang mendukung draft.
+5. Confirmation wajib untuk posting, approving, rejecting, closing, deleting.
+6. Closed period banner harus muncul saat record berada dalam periode tertutup.
+7. Field outlet wajib terlihat pada data outlet-scoped kecuali user hanya punya satu outlet.

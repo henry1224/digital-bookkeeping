@@ -1,54 +1,65 @@
-# CLAUDE.md — Digital Bookkeeping Project Instructions
+# CLAUDE.md — Instruksi Proyek Digital Bookkeeping
 
-## Project
+## Proyek
 
-JJ Steak Digital Bookkeeping — backoffice web for multi-outlet financial, inventory, and accounting control.
+JJ Steak Digital Bookkeeping — web backoffice untuk kontrol keuangan, inventory, dan akuntansi multi-outlet.
 
 ## Stack
 
-- Laravel latest
-- PHP latest stable supported by Laravel latest
+- Laravel versi terbaru
+- PHP versi stable terbaru yang didukung Laravel terbaru
 - Inertia.js
-- Vue 3 with TypeScript
+- Vue 3 dengan TypeScript
 - PostgreSQL
 - Tailwind CSS
-- Pest/PHPUnit for backend tests
-- Vitest for frontend unit tests
-- Playwright for E2E critical paths
+- Pest/PHPUnit untuk backend tests
+- Vitest untuk frontend unit tests
+- Playwright untuk E2E critical paths
 
-## Scope Rules
+## Aturan Scope
 
-1. Build backoffice web only.
-2. Do not build POS replacement.
-3. Do not build mobile app.
-4. POS existing remains outside system; app imports or manually records daily sales summary.
-5. Financial reports are primary goal: Laba Rugi and Neraca.
-6. Cashflow and inventory reports are supporting analytics.
-7. Every financial transaction must be journaled or explicitly marked non-posting.
-8. Every posting journal must balance: total debit = total credit.
-9. Closed periods are immutable except through approved reopen flow.
-10. Every important action must create audit log.
+1. Bangun backoffice web saja.
+2. Jangan bangun pengganti POS.
+3. Jangan bangun mobile app.
+4. POS existing tetap di luar sistem; aplikasi mengimpor atau mencatat manual ringkasan penjualan harian.
+5. Laporan keuangan adalah tujuan utama: Laba Rugi dan Neraca.
+6. Cashflow dan inventory report adalah analitik pendukung.
+7. Setiap transaksi keuangan harus dijurnal atau ditandai eksplisit sebagai non-posting.
+8. Setiap posting journal harus balance: total debit = total credit.
+9. Periode tertutup immutable kecuali lewat reopen flow yang disetujui.
+10. Setiap aksi penting harus membuat audit log.
 
-## Laravel Conventions
+## Keputusan Fondasi MVP
 
-- Use feature-based modules under `app/Modules/<ModuleName>` when module grows.
-- Use Form Requests for validation.
-- Use Actions for business operations that change state.
-- Use Policies for authorization.
-- Use Eloquent casts for Money/Date/JSON.
-- Use database transactions for multi-table writes.
-- Use migrations for all schema changes.
-- Use seeders only for reference/master starter data.
-- Do not put business logic in controllers.
+1. Primary key default memakai `BIGINT` auto-increment.
+2. Nilai uang disimpan sebagai `DECIMAL(18,2)`.
+3. Jangan pernah memakai float untuk uang.
+4. Costing inventory MVP memakai moving average.
+5. Manufacturing tidak termasuk MVP.
+6. Central Kitchen pada MVP hanya outlet/storage, bukan modul produksi.
+7. PB1/tax dikonfigurasi per outlet.
+8. Approval matrix adalah seed default dan harus bisa dikonfigurasi.
 
-## Inertia + Vue Conventions
+## Konvensi Laravel
 
-- Pages in `resources/js/Pages/<Module>/<Page>.vue`.
-- Shared components in `resources/js/Components`.
-- Domain components in `resources/js/Features/<module>`.
-- Use TypeScript types generated/mirrored from API resources.
-- Forms use Inertia `useForm` plus server-side validation errors.
-- Tables use consistent filter/sort/pagination pattern.
+- Gunakan modul berbasis fitur di `app/Modules/<ModuleName>` saat modul mulai membesar.
+- Gunakan Form Request untuk validasi.
+- Gunakan Action untuk operasi bisnis yang mengubah state.
+- Gunakan Policy untuk authorization.
+- Gunakan Eloquent cast untuk Money/Date/JSON.
+- Gunakan database transaction untuk write multi-table.
+- Gunakan migration untuk semua perubahan schema.
+- Gunakan seeder hanya untuk data referensi/master awal.
+- Jangan taruh business logic di controller.
+
+## Konvensi Inertia + Vue
+
+- Pages berada di `resources/js/Pages/<Module>/<Page>.vue`.
+- Shared components berada di `resources/js/Components`.
+- Domain components berada di `resources/js/Features/<module>`.
+- Gunakan TypeScript types yang dibuat/diselaraskan dari API resources.
+- Form memakai Inertia `useForm` plus server-side validation errors.
+- Table memakai pola filter/sort/pagination yang konsisten.
 
 ## Naming
 
@@ -57,32 +68,46 @@ JJ Steak Digital Bookkeeping — backoffice web for multi-outlet financial, inve
 - Enums: singular PascalCase (`PaymentStatus`).
 - Routes: kebab-case (`payment-requests.index`).
 - Vue components: PascalCase.
-- Money fields end with `_amount`.
-- Foreign keys end with `_id`.
-- Timestamps use UTC in database; display WITA for users.
+- Field uang berakhiran `_amount`.
+- Foreign keys berakhiran `_id`.
+- Timestamps disimpan UTC di database; ditampilkan WITA untuk user.
 
-## Financial Safety
+## Keamanan Finansial
 
-- Never use float for money.
-- Store money as integer cents/sen if possible or DECIMAL(18,2). Pick one in ADR before implementation.
-- Validate debit = credit at application and database level.
-- Wrap journal creation and source transaction update in one database transaction.
-- Audit before/after values for approvals, postings, edits, deletes.
+- Jangan pernah memakai float untuk uang.
+- Simpan uang sebagai `DECIMAL(18,2)`.
+- Validasi debit = credit di application level dan database level.
+- Bungkus journal creation dan source transaction update dalam satu database transaction.
+- Audit before/after values untuk approval, posting, edit, delete.
 
-## Testing Minimum
+## Minimum Testing
 
-Every non-trivial financial flow needs at least one feature test:
+Setiap non-trivial financial flow butuh minimal satu feature test:
 
-- Daily sales posting creates balanced journal.
-- Receiving creates stock movement + AP journal.
-- Payment approval and execution updates bank book + journal.
-- Stock adjustment updates stock + journal.
-- Closing blocks edits in closed period.
+- Daily sales posting membuat balanced journal.
+- Receiving membuat stock movement + AP journal.
+- Payment approval dan execution memperbarui bank book + journal.
+- Stock adjustment memperbarui stock + journal.
+- Closing memblokir edit di closed period.
 
-## Do Not
+## Git Workflow
 
-- Do not add dependencies without checking Laravel/native alternatives.
-- Do not create abstractions for one implementation.
-- Do not skip validation at trust boundaries.
-- Do not silently mutate closed-period data.
-- Do not hard-delete financial transactions.
+Ikuti `docs/07-operations/git-workflow.md`. Ringkas:
+
+- Base branch `master`. Jangan commit langsung ke `master`.
+- Sebelum tugas baru: working tree wajib bersih; kalau ada perubahan menggantung, commit dulu.
+- Branch per jenis kerja:
+  - Dokumen: `document/{nama-perbaikan}`
+  - Fitur: `feature/{phase}/{nama-menu}` (`{phase}` = `mvp`/`fase-2`/`fase-3`)
+  - Bug: `bug/{nama-bug}`
+  - Perbaikan non-bug: `fix/{nama-perbaikan}`
+- Siklus: commit → merge `--no-ff` ke `master` → push → hapus branch → branch baru dari `master` terbaru.
+- Satu branch = satu tugas.
+
+## Jangan Lakukan
+
+- Jangan tambah dependency tanpa cek Laravel/native alternative.
+- Jangan buat abstraction untuk satu implementation.
+- Jangan skip validation di trust boundary.
+- Jangan silently mutate closed-period data.
+- Jangan hard-delete financial transactions.

@@ -119,12 +119,56 @@ Aturan unik: `outlet_id + sale_date + shift_code` unik untuk posted/submitted, k
 | comment | text | required untuk rejected/returned |
 | acted_at | timestamp | UTC |
 
+## bank_transactions
+
+Buku Bank: penerimaan/pengeluaran melalui rekening bank. Terbentuk dari Penjualan Harian
+(kas/bank masuk) dan payment execution (bank keluar), atau input manual.
+
+| Column | Type | Rule |
+|---|---|---|
+| outlet_id | FK outlets | nullable untuk rekening tersentralisasi |
+| bank_account_id | FK bank_accounts | required |
+| txn_no | varchar | unique |
+| txn_date | date | tidak dalam closed period |
+| direction | enum | in/out | required |
+| amount | decimal(18,2) | > 0 |
+| reference_type | varchar | daily_sale/payment_execution/manual |
+| reference_id | BIGINT | nullable; source record |
+| description | text | required |
+| running_balance_amount | decimal(18,2) | nullable; dihitung saat rekonsiliasi |
+| status | enum | draft/posted/cancelled | required |
+
+## purchase_requests
+
+Outlet Request: permintaan bahan dari outlet ke purchasing/central kitchen sebelum PO.
+
+| Column | Type | Rule |
+|---|---|---|
+| outlet_id | FK outlets | required (outlet peminta) |
+| request_no | varchar | unique |
+| request_date | date | required |
+| priority | enum | normal/urgent | default normal |
+| status | enum | draft/submitted/approved/converted/cancelled | required |
+| note | text | nullable |
+| requested_by | FK users | required |
+
+## purchase_request_lines
+
+| Column | Type | Rule |
+|---|---|---|
+| purchase_request_id | FK purchase_requests | required |
+| item_id | FK items | required |
+| qty | decimal(18,4) | > 0 |
+| uom_id | FK unit_of_measures | required |
+| note | text | nullable |
+
 ## purchase_orders
 
 | Column | Type | Rule |
 |---|---|---|
 | outlet_id | FK outlets | required |
 | supplier_id | FK suppliers | required |
+| purchase_request_id | FK purchase_requests | nullable; null untuk open PO |
 | po_no | varchar | unique |
 | po_date | date | required |
 | status | enum | draft/submitted/approved/partially_received/received/cancelled | required |
@@ -168,6 +212,31 @@ Aturan unik: `outlet_id + item_id`.
 | total_cost_amount | decimal(18,2) | qty x unit cost |
 
 Catatan: `production_issue` dan `finished_good_receipt` reserved untuk fase 2.
+
+## stock_usages
+
+Ingredient Usage: dokumen sumber pemakaian bahan harian per outlet. Satu usage menghasilkan
+`stock_movements` (movement_type `usage_out`) dan satu journal (source_type `stock_usage`,
+debit HPP Bahan Baku, credit Inventory Bahan Baku).
+
+| Column | Type | Rule |
+|---|---|---|
+| outlet_id | FK outlets | required |
+| usage_no | varchar | unique |
+| usage_date | date | tidak dalam closed period |
+| status | enum | draft/submitted/posted/cancelled | required |
+| total_cost_amount | decimal(18,2) | >= 0; sum of lines |
+| note | text | nullable |
+
+## stock_usage_lines
+
+| Column | Type | Rule |
+|---|---|---|
+| stock_usage_id | FK stock_usages | required |
+| item_id | FK items | required |
+| qty | decimal(18,4) | > 0 |
+| unit_cost_amount | decimal(18,2) | >= 0; moving average saat posting |
+| total_cost_amount | decimal(18,2) | qty x unit cost |
 
 ## journals
 
@@ -220,6 +289,40 @@ Aturan: satu line tidak boleh punya debit dan credit sekaligus. Posted journal t
 | reopen_reason | text nullable | required saat reopened |
 
 Aturan unik: `outlet_id + period_year + period_month`.
+
+## inventory_snapshots
+
+Closing Stock: snapshot valuasi inventory per item saat penutupan periode. Freeze qty & nilai
+agar Laporan Stock periode tertutup tidak berubah oleh transaksi susulan.
+
+| Column | Type | Rule |
+|---|---|---|
+| period_closing_id | FK period_closings | required |
+| outlet_id | FK outlets | required |
+| item_id | FK items | required |
+| qty_on_hand | decimal(18,4) | snapshot saat closing |
+| avg_cost_amount | decimal(18,2) | snapshot saat closing |
+| inventory_value_amount | decimal(18,2) | qty x avg cost |
+
+Aturan unik: `period_closing_id + outlet_id + item_id`.
+
+## report_snapshots
+
+Freeze hasil laporan akuntansi (Trial Balance, Laba Rugi, Neraca) saat closing. Laporan live tetap
+di-generate on-the-fly dari posted journals; snapshot hanya dibuat saat periode ditutup.
+
+| Column | Type | Rule |
+|---|---|---|
+| period_closing_id | FK period_closings | required |
+| outlet_id | FK outlets | nullable untuk konsolidasi |
+| report_type | enum | trial_balance/laba_rugi/neraca | required |
+| period_year | integer | required |
+| period_month | integer | 1-12 |
+| payload | jsonb | isi laporan ter-freeze |
+| generated_at | timestamp | UTC |
+| generated_by | FK users | required |
+
+Aturan unik: `period_closing_id + report_type + outlet_id`.
 
 ## audit_logs
 

@@ -19,6 +19,8 @@ Patokan review: `jj-steak/proposal/ss` dan `Spesifikasi_Modul_Aplikasi_Keuangan.
 | Flash Cost | Fase 2 | Detail rumus disiapkan setelah usage dan stock opname stabil. |
 | Reconcile HPP | Fase 2 | Detail input/output disiapkan setelah closing stock stabil. |
 | Multi Outlet | Ada outlet scoping, policy bisnis belum tajam | Putuskan bank, stock, COA, report per outlet vs konsolidasi. |
+| RBAC | DIKUNCI: superset 12 role | Tambah Costcontrol & Finance staff dari Excel; pertahankan Outlet Manager & Auditor. Sudah di `rbac-matrix.md`. |
+| Outlet Request | DIKUNCI: masuk MVP | `purchase_requests`/`purchase_request_lines` ditambahkan; PO bisa dari request atau open PO. |
 
 ## Gap Yang Harus Ditutup
 
@@ -41,6 +43,18 @@ Patokan review: `jj-steak/proposal/ss` dan `Spesifikasi_Modul_Aplikasi_Keuangan.
 
 5. `Closing`
    - Jadikan checklist eksplisit: sales posted, payment pending reviewed, stock opname reviewed, journals balanced, bank reviewed.
+   - SELESAI: checklist ada di `docs/04-design/user-flows/period-closing-flow.md`.
+
+6. `Konsistensi skema` (ditutup)
+   - `stock_usages`/`stock_usage_lines` ditambahkan — Ingredient Usage MVP punya dokumen sumber; selaras dgn glossary & journal source_type.
+   - `bank_transactions` kini punya definisi kolom di data-dictionary.
+   - `report_snapshots` (Trial Balance/Laba Rugi/Neraca) dan `inventory_snapshots` (Closing Stock) ditambahkan untuk freeze nilai saat closing.
+
+7. `Aging AP` (Fase 2)
+   - Excel taruh aging AP di Fase 2 tapi docs sebelumnya hanya aging AR. Kini keduanya di roadmap Fase 2.
+
+8. `State machine` (ditutup)
+   - Ditambahkan: `stock-adjustment.md`, `manual-journal.md`, `period-reopen.md` di `docs/05-business-rules/state-machines/`. Guard creator ≠ approver ditegaskan.
 
 ## MVP Yang Disarankan
 
