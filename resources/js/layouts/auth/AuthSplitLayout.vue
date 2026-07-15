@@ -95,16 +95,9 @@ defineProps<{
 
             <div class="relative z-10 w-full max-w-[400px]">
                 <div
-                    class="rounded-2xl border border-border/60 bg-card/80 p-8 shadow-xl shadow-black/5 backdrop-blur-sm sm:p-10"
+                    class="rounded-2xl border border-border/60 bg-card/80 p-8 shadow-sm shadow-black/5 backdrop-blur-sm sm:p-10"
                 >
                     <div class="flex flex-col items-center gap-4">
-                        <Link
-                            :href="home()"
-                            class="flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-emerald-500 shadow-lg shadow-primary/25 ring-1 ring-white/20 transition-transform hover:scale-105"
-                        >
-                            <AppLogoIcon class="size-6 fill-current text-white" />
-                        </Link>
-
                         <div class="flex flex-col space-y-1.5 text-center">
                             <h1
                                 class="text-2xl font-semibold tracking-tight"
