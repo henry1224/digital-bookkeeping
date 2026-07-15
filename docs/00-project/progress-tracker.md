@@ -37,7 +37,7 @@ Dokumen ini menjadi papan status resmi proyek Digital Bookkeeping. Update setiap
 | Posting rules baseline | DONE | Rule dasar daily sale, PB1, receiving, payment, stock, manual journal | `f5889ca` | Runtime mapping transaksi belum dibuat. |
 | Journal engine | DONE | `CreateBalancedJournal`, debit=credit guard, audit log | `f5889ca` | Hitung uang pakai integer cents, bukan float. |
 | Audit log baseline | DONE | Table + model + journal audit write | `f5889ca` | Policy append-only belum dibuat. |
-| RBAC | TODO | Roles, permissions, matrix, middleware/policy | - | Seed-reference sudah ada di docs. |
+| RBAC | IN_PROGRESS | Roles, permissions, matrix, middleware/policy | `features/phase-1/rbac` | Schema, seeder, model, dan Gate permission baseline selesai; menunggu commit. |
 | Outlet scoping | TODO | User-outlet access, policy/scope query | - | Perlu desain data assignment user-outlet. |
 | File upload dasar | TODO | Storage config, upload validation, audit | - | Masuk foundation lanjutan bila modul dokumen butuh. |
 | Master Data UI | TODO | CRUD outlets, accounts, items, suppliers, bank accounts | - | Setelah RBAC/outlet scoping minimal. |
@@ -118,7 +118,7 @@ Gunakan checklist ini setiap modul baru.
 | Login UI polish | DONE | Brand Digital Bookkeeping. |
 | Git workflow | DONE | Standar `main`/`origin`/`features`. |
 | Bahasa Indonesia standard | DONE | Docs + locale + baseline auth UI. |
-| RBAC | TODO | Belum schema/seed. |
+| RBAC | IN_PROGRESS | Schema, seed, model, dan Gate permission baseline selesai; menunggu commit. |
 | Outlet scoping | TODO | Belum user-outlet mapping. |
 | Audit log | DONE | Table/model + journal create log. |
 | File upload dasar | TODO | Belum. |
