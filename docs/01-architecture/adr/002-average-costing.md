@@ -10,7 +10,7 @@ F&B inventory has frequent purchases, fast-moving ingredients, and practical ope
 
 ## Decision
 
-Use Weighted Average Cost for MVP unless JJ Steak requires FIFO.
+Use Weighted Average Cost for MVP unless Digital Bookkeeping requires FIFO.
 
 ## Consequences
 

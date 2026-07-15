@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: JJ Steak Digital Bookkeeping API
+  title: Digital Bookkeeping API
   version: 0.1.0
   description: Kontrak API internal untuk backoffice Laravel + Inertia. Inertia page boleh memakai web routes, tetapi spec ini mendefinisikan payload utama.
 servers:

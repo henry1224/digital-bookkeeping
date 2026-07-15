@@ -1,7 +1,7 @@
 # Seed Reference
 
 Nilai referensi konkret untuk seeder awal (data master/referensi, bukan transaksi).
-Semua nilai bisa dikonfigurasi & wajib dikonfirmasi JJ Steak sebelum go-live.
+Semua nilai bisa dikonfigurasi & wajib dikonfirmasi Digital Bookkeeping sebelum go-live.
 
 Sumber terkait:
 - COA: `docs/02-database/chart-of-accounts.md`

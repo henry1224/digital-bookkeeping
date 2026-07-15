@@ -2,7 +2,7 @@
 
 ## Proyek
 
-JJ Steak Digital Bookkeeping — web backoffice untuk kontrol keuangan, inventory, dan akuntansi multi-outlet.
+Digital Bookkeeping — web backoffice untuk kontrol keuangan, inventory, dan akuntansi multi-outlet.
 
 ## Stack
 

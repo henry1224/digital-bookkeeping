@@ -1,6 +1,6 @@
-# JJ Steak Digital Bookkeeping
+# Digital Bookkeeping
 
-Backoffice web untuk kontrol keuangan, inventory, dan akuntansi multi-outlet JJ Steak.
+Backoffice web untuk kontrol keuangan, inventory, dan akuntansi multi-outlet Digital Bookkeeping.
 
 ## Stack
 
