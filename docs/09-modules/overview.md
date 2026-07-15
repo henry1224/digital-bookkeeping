@@ -1,5 +1,7 @@
 # Ringkasan Modul
 
+Progress eksekusi tracked di `docs/00-project/progress-tracker.md`.
+
 ## Urutan Implementasi MVP
 
 1. Foundation
