@@ -95,6 +95,7 @@ Gunakan checklist ini setiap modul baru.
 | Migration dibuat | Ya | Semua schema lewat migration. |
 | Model + casts dibuat | Ya | Money/date/json wajib cast sesuai kebutuhan. |
 | Seeder/reference data idempotent | Jika ada referensi | Pakai `updateOrCreate`. Tidak seed transaksi produksi. |
+| Demo seeder realistis | Ya untuk setiap menu UI | Data dummy seperti operasional nyata, aman untuk development/testing, agar menu langsung bisa dilihat. |
 | Form Request | Jika ada HTTP write | Validasi trust boundary. |
 | Action | Jika mengubah state | Business logic tidak di controller. |
 | DB transaction | Jika multi-table write | Wajib untuk transaksi finansial. |

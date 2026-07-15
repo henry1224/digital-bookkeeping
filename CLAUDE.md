@@ -57,7 +57,9 @@ Digital Bookkeeping — web backoffice untuk kontrol keuangan, inventory, dan ak
 - Gunakan Eloquent cast untuk Money/Date/JSON.
 - Gunakan database transaction untuk write multi-table.
 - Gunakan migration untuk semua perubahan schema.
-- Gunakan seeder hanya untuk data referensi/master awal.
+- Gunakan seeder untuk data referensi/master awal.
+- Setiap menu/modul UI yang dibuat harus sekaligus memiliki demo seeder dengan data dummy yang realistis seperti data operasional nyata, agar menu bisa langsung dilihat dan diuji.
+- Demo seeder harus aman untuk development/testing, idempotent, dan tidak dipakai sebagai transaksi produksi.
 - Jangan taruh business logic di controller.
 
 ## Konvensi Inertia + Vue
@@ -119,5 +121,6 @@ Ikuti `docs/07-operations/git-workflow.md`. Ringkas:
 - Jangan tambah dependency tanpa cek Laravel/native alternative.
 - Jangan buat abstraction untuk satu implementation.
 - Jangan skip validation di trust boundary.
+- Jangan buat menu tanpa demo data realistis untuk development/testing.
 - Jangan silently mutate closed-period data.
 - Jangan hard-delete financial transactions.
