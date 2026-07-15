@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import lottie, { type AnimationItem } from 'lottie-web';
+import lottie from 'lottie-web';
+import type {AnimationItem} from 'lottie-web';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import { home } from '@/routes';
@@ -12,7 +13,10 @@ const lottieContainer = ref<HTMLElement | null>(null);
 let anim: AnimationItem | null = null;
 
 onMounted(() => {
-    if (!lottieContainer.value) return;
+    if (!lottieContainer.value) {
+return;
+}
+
     anim = lottie.loadAnimation({
         container: lottieContainer.value,
         renderer: 'svg',
@@ -75,36 +79,56 @@ defineProps<{
         </div>
 
         <!-- Form panel -->
-        <div class="lg:p-8">
+        <div
+            class="relative flex min-h-dvh items-center justify-center overflow-hidden p-6 sm:p-10"
+        >
+            <!-- Ambient background -->
             <div
-                class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]"
-            >
-                <Link
-                    :href="home()"
-                    class="flex items-center justify-center gap-2 font-semibold lg:hidden"
-                >
-                    <AppLogoIcon
-                        class="size-8 fill-current text-foreground dark:text-white"
-                    />
-                    {{ name }}
-                </Link>
+                class="absolute inset-0 bg-gradient-to-b from-background via-background to-muted/40"
+            />
+            <div
+                class="absolute -top-32 right-0 size-80 rounded-full bg-primary/10 blur-3xl"
+            />
+            <div
+                class="absolute -bottom-32 left-0 size-80 rounded-full bg-emerald-400/10 blur-3xl"
+            />
 
-                <div class="flex flex-col space-y-2 text-center">
-                    <h1
-                        class="text-2xl font-semibold tracking-tight"
-                        v-if="title"
-                    >
-                        {{ title }}
-                    </h1>
-                    <p
-                        class="text-sm text-muted-foreground"
-                        v-if="description"
-                    >
-                        {{ description }}
-                    </p>
+            <div class="relative z-10 w-full max-w-[400px]">
+                <div
+                    class="rounded-2xl border border-border/60 bg-card/80 p-8 shadow-xl shadow-black/5 backdrop-blur-sm sm:p-10"
+                >
+                    <div class="flex flex-col items-center gap-4">
+                        <Link
+                            :href="home()"
+                            class="flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-emerald-500 shadow-lg shadow-primary/25 ring-1 ring-white/20 transition-transform hover:scale-105"
+                        >
+                            <AppLogoIcon class="size-6 fill-current text-white" />
+                        </Link>
+
+                        <div class="flex flex-col space-y-1.5 text-center">
+                            <h1
+                                class="text-2xl font-semibold tracking-tight"
+                                v-if="title"
+                            >
+                                {{ title }}
+                            </h1>
+                            <p
+                                class="text-sm text-muted-foreground"
+                                v-if="description"
+                            >
+                                {{ description }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <slot />
+                    </div>
                 </div>
 
-                <slot />
+                <p class="mt-6 text-center text-xs text-muted-foreground">
+                    &copy; {{ name }}. Backoffice keuangan multi-outlet.
+                </p>
             </div>
         </div>
     </div>
