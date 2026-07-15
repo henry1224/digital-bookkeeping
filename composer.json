@@ -2,7 +2,7 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "jj-steak/digital-bookkeeping",
     "type": "project",
-    "description": "JJ Steak Digital Bookkeeping backoffice.",
+    "description": "Digital Bookkeeping backoffice.",
     "keywords": [
         "laravel",
         "inertia",

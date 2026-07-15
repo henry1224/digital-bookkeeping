@@ -1,10 +1,28 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
+import lottie, { type AnimationItem } from 'lottie-web';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import { home } from '@/routes';
 
 const page = usePage();
-const name = (page.props.name as string) ?? 'JJ Steak Bookkeeping';
+const name = (page.props.name as string) ?? 'Digital Bookkeeping';
+
+const lottieContainer = ref<HTMLElement | null>(null);
+let anim: AnimationItem | null = null;
+
+onMounted(() => {
+    if (!lottieContainer.value) return;
+    anim = lottie.loadAnimation({
+        container: lottieContainer.value,
+        renderer: 'svg',
+        loop: true,
+        autoplay: true,
+        path: '/animations/login-hero.json',
+    });
+});
+
+onBeforeUnmount(() => anim?.destroy());
 
 defineProps<{
     title?: string;
@@ -21,10 +39,13 @@ defineProps<{
             class="relative hidden h-full flex-col justify-between overflow-hidden p-10 text-white lg:flex"
         >
             <div
-                class="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-800 to-red-950"
+                class="absolute inset-0 bg-gradient-to-br from-teal-950 via-emerald-900 to-teal-700"
             />
             <div
                 class="absolute inset-0 opacity-20 [background-image:radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:24px_24px]"
+            />
+            <div
+                class="absolute -top-24 -right-24 size-96 rounded-full bg-emerald-400/20 blur-3xl"
             />
 
             <Link
@@ -35,12 +56,18 @@ defineProps<{
                 {{ name }}
             </Link>
 
+            <div
+                ref="lottieContainer"
+                class="relative z-20 mx-auto w-full max-w-2xl scale-125"
+                aria-hidden="true"
+            />
+
             <div class="relative z-20 max-w-md space-y-3">
                 <p class="text-2xl leading-snug font-medium">
                     Kontrol keuangan, inventory, dan akuntansi multi-outlet
                     dalam satu tempat.
                 </p>
-                <p class="text-sm text-white/60">
+                <p class="text-sm text-emerald-100/70">
                     Backoffice digital untuk Laba Rugi, Neraca, dan arus kas
                     yang akurat.
                 </p>

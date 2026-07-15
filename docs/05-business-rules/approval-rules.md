@@ -2,7 +2,7 @@
 
 ## Default Approval Matrix
 
-Matrix ini adalah seed default. Nilai final harus bisa dikonfigurasi oleh role yang berwenang dan dikonfirmasi JJ Steak sebelum go-live.
+Matrix ini adalah seed default. Nilai final harus bisa dikonfigurasi oleh role yang berwenang dan dikonfirmasi Digital Bookkeeping sebelum go-live.
 
 | Transaction | Amount | Approver |
 |---|---:|---|

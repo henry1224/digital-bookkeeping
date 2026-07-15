@@ -2,11 +2,11 @@
 
 ## Nama Proyek
 
-JJ Steak Digital Bookkeeping
+Digital Bookkeeping
 
 ## Latar Belakang Masalah
 
-JJ Steak membutuhkan sistem backoffice terpusat untuk menggantikan pencatatan Excel manual pada workflow keuangan, inventory, dan akuntansi multi-outlet. Proses manual saat ini lambat, rawan error, sulit diaudit, dan sulit dikonsolidasikan antar-outlet.
+Digital Bookkeeping membutuhkan sistem backoffice terpusat untuk menggantikan pencatatan Excel manual pada workflow keuangan, inventory, dan akuntansi multi-outlet. Proses manual saat ini lambat, rawan error, sulit diaudit, dan sulit dikonsolidasikan antar-outlet.
 
 ## Tujuan Utama
 
