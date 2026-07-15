@@ -40,6 +40,8 @@ Default database: PostgreSQL (`digital_bookkeeping`). Jika pakai Herd/DB GUI, bu
 
 ## Urutan Baca untuk Pengembangan AI
 
+Untuk tugas/menu spesifik, gunakan `docs/07-operations/document-reading-standard.md` agar hanya membaca dokumen yang relevan.
+
 1. `CLAUDE.md` — instruksi proyek untuk AI
 2. `docs/01-architecture/adr-001-keputusan-fondasi.md` — keputusan fondasi MVP
 3. `docs/00-project/glossary.md` — bahasa bisnis
