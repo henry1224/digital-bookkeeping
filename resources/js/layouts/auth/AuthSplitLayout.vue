@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
 import lottie from 'lottie-web';
-import type {AnimationItem} from 'lottie-web';
+import type { AnimationItem } from 'lottie-web';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import { home } from '@/routes';
@@ -14,8 +14,8 @@ let anim: AnimationItem | null = null;
 
 onMounted(() => {
     if (!lottieContainer.value) {
-return;
-}
+        return;
+    }
 
     anim = lottie.loadAnimation({
         container: lottieContainer.value,
@@ -46,7 +46,7 @@ defineProps<{
                 class="absolute inset-0 bg-gradient-to-br from-teal-950 via-emerald-900 to-teal-700"
             />
             <div
-                class="absolute inset-0 opacity-20 [background-image:radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:24px_24px]"
+                class="absolute inset-0 [background-image:radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:24px_24px] opacity-20"
             />
             <div
                 class="absolute -top-24 -right-24 size-96 rounded-full bg-emerald-400/20 blur-3xl"

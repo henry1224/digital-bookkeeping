@@ -24,6 +24,14 @@ Skill AI pendamping (opsional, setelah `components.json` ada): `npx skills add s
 install; review dulu. Karena registry skill saat ini React-first, konfirmasi ketersediaan varian
 Vue sebelum dipakai; kalau belum ada, cukup ikuti aturan di dokumen ini.
 
+## Bahasa UI
+
+1. Semua copy yang terlihat user wajib Bahasa Indonesia: menu, judul, label, tombol, placeholder, empty state, alert, toast, modal, email, dan notifikasi.
+2. Pesan validasi dan error yang tampil di form wajib Bahasa Indonesia. Error internal boleh Bahasa Inggris hanya jika tidak dikirim ke client.
+3. Label data referensi dari database wajib ramah user dan Bahasa Indonesia: status, role, tipe transaksi, kategori, group laporan, dan action audit.
+4. Kode internal boleh tetap English/kebab/snake case; UI harus mapping ke label Bahasa Indonesia.
+5. Jangan tampilkan enum mentah seperti `pending_approval`; tampilkan `Menunggu Persetujuan`.
+
 ## Prinsip
 
 1. Kejelasan finansial lebih penting daripada dekorasi.

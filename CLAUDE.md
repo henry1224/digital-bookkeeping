@@ -40,6 +40,14 @@ Digital Bookkeeping — web backoffice untuk kontrol keuangan, inventory, dan ak
 7. PB1/tax dikonfigurasi per outlet.
 8. Approval matrix adalah seed default dan harus bisa dikonfigurasi.
 
+## Bahasa UI dan Validasi
+
+- Semua teks yang terlihat client/user wajib Bahasa Indonesia: label form, tombol, menu, judul, empty state, alert, toast, notifikasi, email, dan pesan error.
+- Data referensi dari database yang ditampilkan ke user (nama role, status, tipe transaksi, kategori, report label) wajib disimpan/ditampilkan dalam Bahasa Indonesia. Kode internal boleh Bahasa Inggris/kode singkat.
+- Pesan validasi Laravel wajib memakai locale `id`; custom validation message juga wajib Bahasa Indonesia.
+- Backend code, class, method, table, column, enum value, dan internal exception boleh Bahasa Inggris selama tidak langsung tampil ke client.
+- Jika error backend perlu dikirim ke UI, mapping dulu ke copy Bahasa Indonesia yang aman dibaca user.
+
 ## Konvensi Laravel
 
 - Gunakan modul berbasis fitur di `app/Modules/<ModuleName>` saat modul mulai membesar.
@@ -95,14 +103,15 @@ Setiap non-trivial financial flow butuh minimal satu feature test:
 
 Ikuti `docs/07-operations/git-workflow.md`. Ringkas:
 
-- Base branch `master`. Jangan commit langsung ke `master`.
-- Sebelum tugas baru: working tree wajib bersih; kalau ada perubahan menggantung, commit dulu.
+- Base branch `main`. Jangan commit langsung ke `main`.
+- Ikuti standar branch seperti `perumda-eproc`: semua kerja lewat branch task dari `main` terbaru.
+- Sebelum tugas baru: working tree wajib bersih; kalau ada perubahan menggantung, commit dulu di branch aktif.
 - Branch per jenis kerja:
-  - Dokumen: `document/{nama-perbaikan}`
-  - Fitur: `feature/{phase}/{nama-menu}` (`{phase}` = `mvp`/`fase-2`/`fase-3`)
+  - Dokumen: `docs/{nama-perbaikan}`
+  - Fitur: `features/{phase}/{nama-menu}` (`{phase}` = `phase-1`/`phase-2`/`phase-3`)
   - Bug: `bug/{nama-bug}`
-  - Perbaikan non-bug: `fix/{nama-perbaikan}`
-- Siklus: commit → merge `--no-ff` ke `master` → push → **branch tugas tetap disimpan** → branch baru dari `master` terbaru.
+  - Perbaikan non-bug/style/config: `fix/{nama-perbaikan}` atau `style/{nama-perbaikan}`
+- Siklus: branch dari `main` → commit → merge `--no-ff` ke `main` → push `origin main` → **branch tugas tetap disimpan** → branch baru dari `main` terbaru.
 - Satu branch = satu tugas.
 
 ## Jangan Lakukan
