@@ -38,9 +38,9 @@ Dokumen ini menjadi papan status resmi proyek Digital Bookkeeping. Update setiap
 | Journal engine | DONE | `CreateBalancedJournal`, debit=credit guard, audit log | `f5889ca` | Hitung uang pakai integer cents, bukan float. |
 | Audit log baseline | DONE | Table + model + journal audit write | `f5889ca` | Policy append-only belum dibuat. |
 | RBAC | IN_PROGRESS | Roles, permissions, matrix, middleware/policy | `features/phase-1/rbac` | Schema, seeder, model, dan Gate permission baseline selesai; menunggu commit. |
-| Outlet scoping | TODO | User-outlet access, policy/scope query | - | Perlu desain data assignment user-outlet. |
+| Outlet scoping | IN_PROGRESS | User-outlet access, policy/scope query | `features/phase-1/outlet-scoping` | User-outlet pivot, access helper, dan seeder baseline selesai; menunggu commit. |
 | File upload dasar | TODO | Storage config, upload validation, audit | - | Masuk foundation lanjutan bila modul dokumen butuh. |
-| Master Data UI | TODO | CRUD outlets, accounts, items, suppliers, bank accounts | - | Setelah RBAC/outlet scoping minimal. |
+| Master Data UI | IN_PROGRESS | CRUD outlets, accounts, items, suppliers, bank accounts | `features/phase-1/outlet-scoping` | Outlet list/create/update/toggle aktif selesai; CRUD master data lain belum. |
 | Daily Sales | TODO | Input/import ringkasan penjualan harian + journal | - | Kandidat modul transaksi pertama. |
 | Bank Book | TODO | Bank transactions, running balance, manual bank entry | - | Depend ke bank_accounts + journal. |
 | Payment Request | TODO | Supplier payment + non-stock expense | - | Butuh approval matrix. |
@@ -119,7 +119,7 @@ Gunakan checklist ini setiap modul baru.
 | Git workflow | DONE | Standar `main`/`origin`/`features`. |
 | Bahasa Indonesia standard | DONE | Docs + locale + baseline auth UI. |
 | RBAC | IN_PROGRESS | Schema, seed, model, dan Gate permission baseline selesai; menunggu commit. |
-| Outlet scoping | TODO | Belum user-outlet mapping. |
+| Outlet scoping | IN_PROGRESS | User-outlet pivot, access helper, dan seeder baseline selesai; menunggu commit. |
 | Audit log | DONE | Table/model + journal create log. |
 | File upload dasar | TODO | Belum. |
 
@@ -127,7 +127,7 @@ Gunakan checklist ini setiap modul baru.
 
 | Sub-item | Status | Catatan |
 |---|---|---|
-| Outlets | DONE | Schema/model/seeder. UI belum. |
+| Outlets | DONE | Schema/model/seeder + UI list paginated, create, update, toggle aktif; tanpa hard delete. |
 | Outlet configs | DONE | PB1 baseline. UI belum. |
 | Accounts/COA | DONE | Schema/model/seeder. UI belum. |
 | Item groups | DONE | Schema/model/seeder. UI belum. |

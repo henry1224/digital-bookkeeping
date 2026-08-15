@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             ChartOfAccountsSeeder::class,
             MasterDataSeeder::class,
+            OutletUserSeeder::class,
             PostingRuleSeeder::class,
         ]);
     }

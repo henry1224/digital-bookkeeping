@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Laporan Audit Dokumentasi — Digital Bookkeeping</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --background: hsl(0 0% 100%);
+    --foreground: hsl(0 0% 3.9%);
+    --primary: hsl(168 76% 36%);
+    --primary-dark: hsl(170 70% 24%);
+    --secondary: hsl(160 30% 94%);
+    --muted: hsl(165 25% 96%);
+    --muted-foreground: hsl(185 12% 42%);
+    --accent: hsl(166 60% 92%);
+    --success: hsl(168 76% 30%);
+    --warning: hsl(38 92% 42%);
+    --danger: hsl(0 74% 47%);
+    --border: hsl(165 20% 85%);
+    --paper: hsl(45 38% 97%);
+    --ink: hsl(160 20% 14%);
+    --stamp: hsl(0 65% 42%);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 500px at 10% -10%, hsl(168 60% 92% / .6), transparent),
+      var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Mono', ui-monospace, monospace;
+    font-size:14px;
+    line-height:1.6;
+    padding:0 0 80px;
+  }
+  h1,h2,h3{ font-family:'Fraunces', serif; font-weight:600; letter-spacing:-.01em; margin:0; }
+  .wrap{ max-width:1040px; margin:0 auto; padding:0 28px; }
+
+  /* HEADER / MASTHEAD */
+  header.masthead{
+    background: linear-gradient(160deg, var(--primary-dark), var(--primary) 60%, hsl(168 60% 46%));
+    color:#fff;
+    padding:56px 0 64px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.masthead::after{
+    content:"";
+    position:absolute; inset:0;
+    background-image:radial-gradient(circle at 1px 1px, rgba(255,255,255,.18) 1px, transparent 0);
+    background-size:22px 22px;
+    opacity:.5;
+  }
+  .masthead .wrap{ position:relative; z-index:2; }
+  .eyebrow{
+    font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+    color:hsl(166 70% 88%); font-weight:600; margin-bottom:14px; display:flex; gap:10px; align-items:center;
+  }
+  .eyebrow::before{ content:""; width:26px; height:1px; background:hsl(166 70% 78%); display:inline-block; }
+  h1.title{ font-size:clamp(32px,5vw,48px); color:#fff; max-width:20ch; }
+  .subtitle{ margin-top:14px; max-width:56ch; color:hsl(166 55% 92%); font-size:14.5px; }
+  .meta-row{ display:flex; flex-wrap:wrap; gap:28px; margin-top:34px; }
+  .meta-item .k{ font-size:10.5px; text-transform:uppercase; letter-spacing:.12em; color:hsl(166 60% 82%); }
+  .meta-item .v{ font-family:'Fraunces', serif; font-size:20px; font-weight:600; color:#fff; margin-top:2px; }
+  .stamp{
+    position:absolute; top:44px; right:28px; z-index:3;
+    border:3px solid rgba(255,255,255,.75); color:rgba(255,255,255,.85);
+    border-radius:6px; padding:10px 18px; transform:rotate(6deg);
+    font-family:'Fraunces', serif; font-weight:700; font-size:13px; letter-spacing:.14em;
+    text-transform:uppercase; text-align:center; line-height:1.3;
+  }
+
+  /* SCORE STRIP */
+  .score-strip{
+    display:grid; grid-template-columns:repeat(5,1fr); gap:1px;
+    background:var(--border);
+    border:1px solid var(--border);
+    margin-top:-34px; position:relative; z-index:4;
+    box-shadow:0 20px 40px -20px rgba(0,60,45,.35);
+  }
+  .score-cell{ background:#fff; padding:20px 18px; }
+  .score-cell .num{ font-family:'Fraunces', serif; font-size:30px; font-weight:700; color:var(--primary-dark); }
+  .score-cell .lbl{ font-size:10.5px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted-foreground); margin-top:4px; }
+  .score-cell.warn .num{ color:var(--warning); }
+  .score-cell.bad .num{ color:var(--danger); }
+
+  section{ margin-top:56px; }
+  .section-head{ display:flex; align-items:baseline; gap:14px; border-bottom:2px solid var(--ink); padding-bottom:10px; margin-bottom:22px; }
+  .section-head .idx{ font-family:'Fraunces', serif; font-size:13px; color:var(--primary-dark); font-weight:700; }
+  .section-head h2{ font-size:22px; }
+  .section-head .count{ margin-left:auto; font-size:11px; color:var(--muted-foreground); text-transform:uppercase; letter-spacing:.08em; }
+
+  p.lead{ color:var(--muted-foreground); max-width:74ch; margin:0 0 20px; }
+
+  /* GAP TABLE (ledger style) */
+  table.ledger{ width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--border); }
+  table.ledger caption{ text-align:left; font-family:'Fraunces', serif; font-size:15px; font-weight:600; padding:12px 16px; background:var(--muted); border-bottom:1px solid var(--border); }
+  table.ledger th{ text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted-foreground); background:var(--muted); padding:10px 14px; border-bottom:1px solid var(--border); }
+  table.ledger td{ padding:12px 14px; border-bottom:1px solid var(--border); vertical-align:top; font-size:13px; }
+  table.ledger tr:last-child td{ border-bottom:none; }
+  table.ledger tr:hover td{ background:hsl(165 30% 98%); }
+  code, .path{ font-family:'IBM Plex Mono', monospace; font-size:12px; background:var(--muted); padding:1px 6px; border-radius:3px; color:var(--primary-dark); }
+
+  .badge{ display:inline-block; font-size:10px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; padding:3px 9px; border-radius:99px; border:1px solid transparent; white-space:nowrap; }
+  .badge.ok{ background:hsl(168 55% 92%); color:var(--success); border-color:hsl(168 40% 78%); }
+  .badge.part{ background:hsl(38 90% 94%); color:var(--warning); border-color:hsl(38 70% 78%); }
+  .badge.gap{ background:hsl(0 65% 95%); color:var(--danger); border-color:hsl(0 55% 82%); }
+  .badge.info{ background:var(--secondary); color:var(--primary-dark); border-color:var(--border); }
+
+  /* PRIORITY FINDINGS */
+  .findings{ display:grid; gap:14px; }
+  .finding{ background:#fff; border:1px solid var(--border); border-left:4px solid var(--danger); padding:16px 18px; display:grid; grid-template-columns:34px 1fr; gap:14px; }
+  .finding.warn{ border-left-color:var(--warning); }
+  .finding .rank{ font-family:'Fraunces', serif; font-size:22px; font-weight:700; color:var(--danger); }
+  .finding.warn .rank{ color:var(--warning); }
+  .finding h3{ font-size:15px; margin-bottom:4px; }
+  .finding p{ margin:0; color:var(--muted-foreground); font-size:13px; max-width:78ch; }
+  .finding .fix{ margin-top:8px; font-size:12.5px; color:var(--primary-dark); }
+  .finding .fix b{ text-transform:uppercase; letter-spacing:.06em; font-size:10px; margin-right:6px; }
+
+  /* CATEGORY GRID */
+  .cat-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:1px; background:var(--border); border:1px solid var(--border); }
+  .cat-card{ background:#fff; padding:16px 18px; }
+  .cat-card .name{ font-family:'Fraunces', serif; font-weight:600; font-size:14.5px; }
+  .cat-card .bar-track{ height:6px; border-radius:99px; background:var(--muted); margin:10px 0 8px; overflow:hidden; }
+  .cat-card .bar-fill{ height:100%; background:var(--primary); border-radius:99px; }
+  .cat-card .bar-fill.warn{ background:var(--warning); }
+  .cat-card .bar-fill.bad{ background:var(--danger); }
+  .cat-card .foot{ display:flex; justify-content:space-between; font-size:11px; color:var(--muted-foreground); }
+
+  footer{ margin-top:70px; border-top:1px solid var(--border); padding-top:20px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; font-size:11.5px; color:var(--muted-foreground); }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="stamp">Audit<br/>Internal</div>
+  <div class="wrap">
+    <div class="eyebrow">Digital Bookkeeping · docs/</div>
+    <h1 class="title">Laporan Audit Kelengkapan Dokumentasi</h1>
+    <p class="subtitle">Peninjauan menyeluruh terhadap 10 kategori dokumen (00–09) dibandingkan dengan implementasi kode aktual (Laravel + Inertia + Vue). Tujuan: menandai bagian yang kurang, tidak konsisten, atau belum sinkron dengan kode.</p>
+    <div class="meta-row">
+      <div class="meta-item"><div class="k">Tanggal</div><div class="v">13 Agu 2026</div></div>
+      <div class="meta-item"><div class="k">Ruang Lingkup</div><div class="v">45 dokumen, 10 kategori</div></div>
+      <div class="meta-item"><div class="k">Branch Aktif</div><div class="v">phase-1/outlet-scoping</div></div>
+      <div class="meta-item"><div class="k">Status</div><div class="v">7 Gap · 2 Kritis</div></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="score-strip">
+    <div class="score-cell"><div class="num">45</div><div class="lbl">Dokumen ditinjau</div></div>
+    <div class="score-cell"><div class="num">31</div><div class="lbl">Lengkap</div></div>
+    <div class="score-cell warn"><div class="num">6</div><div class="lbl">Sebagian</div></div>
+    <div class="score-cell bad"><div class="num">2</div><div class="lbl">Kosong / kritis</div></div>
+    <div class="score-cell bad"><div class="num">3</div><div class="lbl">Tidak sinkron dgn kode</div></div>
+  </div>
+
+  <section>
+    <div class="section-head"><span class="idx">01</span><h2>Temuan Prioritas</h2><span class="count">Urut dampak tertinggi</span></div>
+    <div class="findings">
+      <div class="finding">
+        <div class="rank">1</div>
+        <div>
+          <h3>Wireframes kosong total — <code>docs/04-design/wireframes/</code></h3>
+          <p>Folder sudah dibuat sejak 10 Jul tapi 0 file. Halaman baru (Master Data, Finance, Logistik, Reporting) dibangun tanpa rujukan layout tervalidasi, berisiko UI antar developer/agent berbeda-beda — persis kekhawatiran "tampilan berubah-ubah".</p>
+          <div class="fix"><b>Aksi</b>Buat minimal 1 wireframe per template (list, form, detail, report) sesuai <span class="path">design-system.md</span> §Template Layout sebelum modul transaksi berikutnya digarap.</div>
+        </div>
+      </div>
+      <div class="finding">
+        <div class="rank">2</div>
+        <div>
+          <h3>Token warna dokumen vs kode sudah divergen</h3>
+          <p><span class="path">docs/04-design/design-system.md</span> mendefinisikan primary <code>#1E40AF</code> (biru). Implementasi nyata di <span class="path">resources/css/app.css</span> memakai <code>hsl(168 76% 36%)</code> (emerald/teal). Warning/danger/border juga tidak match. Dokumen ini sudah jadi sumber kebenaran palsu.</p>
+          <div class="fix"><b>Aksi</b>Update tabel Design Tokens di design-system.md agar merefleksikan CSS variable aktual (emerald/teal), bukan sebaliknya — karena kode sudah dipakai di halaman Login &amp; Outlets.</div>
+        </div>
+      </div>
+      <div class="finding">
+        <div class="rank">3</div>
+        <div>
+          <h3>Kamus data belum mencakup 11 dari 27 tabel inti MVP</h3>
+          <p><span class="path">docs/02-database/data-dictionary.md</span> tidak punya definisi kolom untuk <code>users</code>, <code>roles</code>, <code>permissions</code>, <code>item_groups</code>, <code>unit_of_measures</code>, <code>suppliers</code>, <code>bank_accounts</code>, <code>recipes</code>, <code>recipe_ingredients</code>, <code>stock_counts(_lines)</code>, <code>stock_adjustments(_lines)</code> — padahal migration &amp; model sudah ada untuk sebagian (mis. Supplier, Item, UOM).</p>
+          <div class="fix"><b>Aksi</b>Tambah 11 section baru mengikuti pola kolom yang sudah ada di file yang sama.</div>
+        </div>
+      </div>
+      <div class="finding warn">
+        <div class="rank">4</div>
+        <div>
+          <h3>Dua dokumen ber-ID "ADR-001" yang berbeda topik</h3>
+          <p><span class="path">docs/01-architecture/adr-001-keputusan-fondasi.md</span> (Keputusan Fondasi) dan <span class="path">docs/01-architecture/adr/001-stack-laravel-inertia-vue.md</span> (stack Laravel) sama-sama diberi nomor 001 di lokasi berbeda.</p>
+          <div class="fix"><b>Aksi</b>Konsolidasikan semua ADR ke folder <span class="path">adr/</span> dengan penomoran berurutan tunggal (mis. geser fondasi jadi ADR-005 atau gabung).</div>
+        </div>
+      </div>
+      <div class="finding warn">
+        <div class="rank">5</div>
+        <div>
+          <h3>ADR-002 (moving average) masih berstatus "Proposed"</h3>
+          <p>Padahal <span class="path">review-action-plan.md</span> dan <span class="path">CLAUDE.md</span> sudah mengunci moving average sebagai keputusan final MVP. Status ADR belum diupdate ke "Accepted" — inkonsisten antar dokumen.</p>
+          <div class="fix"><b>Aksi</b>Ubah status jadi Accepted, tautkan ke adr-001-keputusan-fondasi sebagai rujukan penguncian.</div>
+        </div>
+      </div>
+      <div class="finding warn">
+        <div class="rank">6</div>
+        <div>
+          <h3>Kontrak API sangat minim — hanya 10 endpoint <code>POST</code></h3>
+          <p><span class="path">docs/03-api/openapi.yaml</span> cuma mendefinisikan create untuk 8 resource. Tidak ada GET/list, master data (outlet, item, supplier, account, user), stock opname, recipe, maupun report (Laba Rugi/Neraca/Trial Balance).</p>
+          <div class="fix"><b>Aksi</b>Tambah minimal GET list + detail per resource utama, dan schema report sebelum modul reporting digarap.</div>
+        </div>
+      </div>
+      <div class="finding warn">
+        <div class="rank">7</div>
+        <div>
+          <h3>State machine &amp; user-flow belum cover transaksi inti</h3>
+          <p>State machine ada untuk manual-journal, payment-request, period-closing/reopen, purchase-order, stock-adjustment — tapi <b>tidak ada</b> untuk <code>daily_sales</code>, <code>receiving</code>, <code>purchase_request</code> (outlet request), dan <code>stock_usage</code>/opname, walau ini transaksi harian utama MVP.</p>
+          <div class="fix"><b>Aksi</b>Tambah 4 state machine yang hilang di <span class="path">docs/05-business-rules/state-machines/</span>.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="idx">02</span><h2>Kelengkapan per Kategori</h2><span class="count">10 kategori</span></div>
+    <div class="cat-grid">
+      <div class="cat-card"><div class="name">00 · Project</div><div class="bar-track"><div class="bar-fill warn" style="width:80%"></div></div><div class="foot"><span>4 dok</span><span>Sign-off 0/5</span></div></div>
+      <div class="cat-card"><div class="name">01 · Architecture</div><div class="bar-track"><div class="bar-fill warn" style="width:70%"></div></div><div class="foot"><span>6 dok</span><span>ADR bentrok</span></div></div>
+      <div class="cat-card"><div class="name">02 · Database</div><div class="bar-track"><div class="bar-fill warn" style="width:75%"></div></div><div class="foot"><span>4 dok</span><span>11 tabel kosong</span></div></div>
+      <div class="cat-card"><div class="name">03 · API</div><div class="bar-track"><div class="bar-fill bad" style="width:35%"></div></div><div class="foot"><span>2 dok</span><span>Create-only</span></div></div>
+      <div class="cat-card"><div class="name">04 · Design</div><div class="bar-track"><div class="bar-fill bad" style="width:40%"></div></div><div class="foot"><span>4 dok</span><span>Wireframe kosong</span></div></div>
+      <div class="cat-card"><div class="name">05 · Business Rules</div><div class="bar-track"><div class="bar-fill warn" style="width:78%"></div></div><div class="foot"><span>10 dok</span><span>4 state machine kurang</span></div></div>
+      <div class="cat-card"><div class="name">06 · Security</div><div class="bar-track"><div class="bar-fill" style="width:95%"></div></div><div class="foot"><span>2 dok</span><span>Lengkap</span></div></div>
+      <div class="cat-card"><div class="name">07 · Operations</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="foot"><span>5 dok</span><span>Lengkap</span></div></div>
+      <div class="cat-card"><div class="name">08 · Testing</div><div class="bar-track"><div class="bar-fill" style="width:95%"></div></div><div class="foot"><span>2 dok</span><span>Lengkap</span></div></div>
+      <div class="cat-card"><div class="name">09 · Modules</div><div class="bar-track"><div class="bar-fill warn" style="width:82%"></div></div><div class="foot"><span>6 dok</span><span>PRD ringkas</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="idx">03</span><h2>Rincian Gap per Dokumen</h2><span class="count">Detail</span></div>
+    <table class="ledger">
+      <caption>02-database · data-dictionary.md</caption>
+      <thead><tr><th style="width:22%">Tabel</th><th style="width:14%">Status</th><th>Catatan</th></tr></thead>
+      <tbody>
+        <tr><td><code>users / roles / permissions</code></td><td><span class="badge gap">Kosong</span></td><td>Model sudah ada (<span class="path">app/Models/Role.php</span>, <span class="path">Permission.php</span>) tapi belum ada section kolom di kamus data.</td></tr>
+        <tr><td><code>item_groups</code>, <code>unit_of_measures</code></td><td><span class="badge gap">Kosong</span></td><td>Dipakai di seed-reference.md tapi tanpa definisi kolom formal.</td></tr>
+        <tr><td><code>suppliers</code>, <code>bank_accounts</code></td><td><span class="badge gap">Kosong</span></td><td>Model ada, kamus data belum.</td></tr>
+        <tr><td><code>recipes</code>, <code>recipe_ingredients</code></td><td><span class="badge gap">Kosong</span></td><td>Disebut di stock-rules.md tanpa struktur kolom.</td></tr>
+        <tr><td><code>stock_counts(_lines)</code>, <code>stock_adjustments(_lines)</code></td><td><span class="badge gap">Kosong</span></td><td>State machine stock-adjustment sudah ada, kolomnya belum didokumentasikan.</td></tr>
+      </tbody>
+    </table>
+
+    <table class="ledger" style="margin-top:24px">
+      <caption>04-design · design-system.md vs implementasi</caption>
+      <thead><tr><th style="width:22%">Item</th><th style="width:20%">Dokumen</th><th style="width:20%">Kode Aktual</th><th>Dampak</th></tr></thead>
+      <tbody>
+        <tr><td>Primary color</td><td><code>#1E40AF</code></td><td><code>hsl(168 76% 36%)</code></td><td><span class="badge gap">Tidak sinkron</span> — dokumen jadi tidak bisa dijadikan rujukan token.</td></tr>
+        <tr><td>Success color</td><td><code>#047857</code></td><td>mengikuti <code>--primary</code> (sama keluarga hijau)</td><td><span class="badge part">Sebagian cocok</span></td></tr>
+        <tr><td>Danger color</td><td><code>#B91C1C</code></td><td><code>hsl(0 74% 47%)</code></td><td><span class="badge part">Mirip, beda shade</span></td></tr>
+        <tr><td>Radius</td><td>4/8/12px</td><td><code>--radius: 0.5rem</code> (8px) dasar shadcn</td><td><span class="badge ok">Cocok</span></td></tr>
+      </tbody>
+    </table>
+
+    <table class="ledger" style="margin-top:24px">
+      <caption>00-project · review-action-plan.md — Checklist Sign-Off</caption>
+      <thead><tr><th>Stakeholder</th><th style="width:16%">Status</th></tr></thead>
+      <tbody>
+        <tr><td>Finance — alur kas, bank, payment request, Purchase Non Stock</td><td><span class="badge gap">Belum</span></td></tr>
+        <tr><td>Operasional — PO, receiving, stock opname, adjustment, recipe</td><td><span class="badge gap">Belum</span></td></tr>
+        <tr><td>Accounting — COA, posting rule, journal, closing, Laba Rugi, Neraca</td><td><span class="badge gap">Belum</span></td></tr>
+        <tr><td>Management — scope MVP vs Fase 2/3</td><td><span class="badge gap">Belum</span></td></tr>
+        <tr><td>IT — RBAC, audit log, file upload, outlet scoping</td><td><span class="badge gap">Belum</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="idx">04</span><h2>Yang Sudah Solid</h2><span class="count">Tidak perlu aksi</span></div>
+    <p class="lead">Supaya audit ini seimbang — bagian berikut sudah lengkap, konsisten, dan tidak butuh perubahan:</p>
+    <table class="ledger">
+      <thead><tr><th style="width:22%">Kategori</th><th>Kenapa dianggap solid</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge info">06 Security</span></td><td>RBAC matrix 12 role × 20 aksi lengkap; threat-model mencakup asset, vector, mitigasi, dan security requirement terukur.</td></tr>
+        <tr><td><span class="badge info">07 Operations</span></td><td>Git workflow, deployment, runbook, document-reading-standard saling merujuk konsisten dan sudah dipraktikkan di git log aktual.</td></tr>
+        <tr><td><span class="badge info">08 Testing</span></td><td>test-strategy.md & test-data.md selaras dengan test suite nyata (17 file di <span class="path">tests/</span>).</td></tr>
+        <tr><td><span class="badge info">05 Financial/Stock Rules</span></td><td>Aturan journal, posting, closing, stock sudah presisi dan konsisten dengan ADR-001/003/004.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <footer>
+    <span>Laporan statis — dibuat manual, tidak auto-regenerate. Update berkala saat gap ditutup.</span>
+    <span><code>docs/00-project/audit-report.html</code></span>
+  </footer>
+</div>
+</body>
+</html>

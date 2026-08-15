@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git status*)",
+      "Bash(git branch*)",
+      "Bash(git log*)",
+      "Bash(git rev-parse*)",
+      "Bash(git merge-base*)",
+      "Bash(git checkout *)",
+      "Bash(git switch *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git merge --no-ff *)",
+      "Bash(php artisan --version*)",
+      "Bash(php artisan about*)",
+      "Bash(php artisan route:list*)",
+      "Bash(php artisan config:clear*)",
+      "Bash(php artisan route:clear*)",
+      "Bash(php artisan view:clear*)",
+      "Bash(php artisan migrate*)",
+      "Bash(npm run build*)",
+      "Bash(npm run dev*)",
+      "Bash(npm run types:check*)",
+      "Bash(composer install*)",
+      "Bash(npm install*)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(git reset --hard*)",
+      "Bash(git clean -*)",
+      "Bash(git push --force*)"
+    ]
+  }
+}
