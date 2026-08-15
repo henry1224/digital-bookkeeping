@@ -36,7 +36,7 @@ Patokan review: `jj-steak/proposal/ss` dan `Spesifikasi_Modul_Aplikasi_Keuangan.
    - Fase 2: invoice/receivable lifecycle dan aging AR.
 
 3. `Flash Cost` dan `Reconcile HPP`
-   - Fase 2.
+   - DIKUNCI: MVP (lihat tabel Keputusan Wajib di atas).
    - Definisikan sumber data: sales, ingredient usage, recipe standard, stock opname.
    - Definisikan output: variance qty, variance cost, waste/selisih stock.
 
@@ -63,7 +63,8 @@ Patokan review: `jj-steak/proposal/ss` dan `Spesifikasi_Modul_Aplikasi_Keuangan.
 
 - Masuk MVP: Master Data, Penjualan Harian, Buku Bank, Payment Request, PO Stock, Receiving, Stock Opname, Adjustment, Recipe standard, Journal, Closing, Laba Rugi, Neraca.
 - Masuk MVP juga: Purchase Non Stock, karena biaya operasional harian pasti terjadi.
-- Tunda: Manufacturing, Customer/AR, Flash Cost, Reconcile HPP, full tax, payroll, fixed asset, budgeting, bank API, dashboard analitik.
+- Masuk MVP juga: Flash Cost dan Reconcile HPP (DIKUNCI, lihat tabel Keputusan Wajib).
+- Tunda: Manufacturing, Customer/AR, full tax (PPN/PPh/e-Faktur), payroll, fixed asset, budgeting, bank API, dashboard analitik.
 
 ## Checklist Sign-Off
 
