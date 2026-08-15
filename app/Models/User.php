@@ -41,11 +41,23 @@ class User extends Authenticatable implements PasskeyUser
         return $this->belongsToMany(Role::class);
     }
 
+    /** @return BelongsToMany<Outlet, $this> */
+    public function outlets(): BelongsToMany
+    {
+        return $this->belongsToMany(Outlet::class);
+    }
+
     public function hasPermission(string $permission): bool
     {
         return $this->roles()
             ->whereHas('permissions', fn ($query) => $query->where('slug', $permission))
             ->exists();
+    }
+
+    public function canAccessOutlet(int $outletId): bool
+    {
+        return $this->roles()->where('is_outlet_scoped', false)->exists()
+            || $this->outlets()->whereKey($outletId)->exists();
     }
 
     /**
