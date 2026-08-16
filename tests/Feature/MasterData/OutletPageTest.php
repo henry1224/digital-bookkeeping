@@ -52,6 +52,31 @@ class OutletPageTest extends TestCase
             );
     }
 
+    public function test_owner_can_filter_outlets_by_status_and_type(): void
+    {
+        $this->withoutVite();
+        $owner = $this->owner();
+
+        Outlet::create([
+            'code' => 'BPN-X',
+            'name' => 'Balikpapan X',
+            'outlet_type' => 'outlet',
+            'timezone' => 'Asia/Makassar',
+            'is_active' => false,
+        ]);
+
+        $this->actingAs($owner)
+            ->get(route('master-data.outlets.index', ['status' => 'nonaktif', 'type' => 'outlet']))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('master-data/Outlets')
+                ->has('outlets.data', 1)
+                ->where('outlets.data.0.code', 'BPN-X')
+                ->where('filters.status', 'nonaktif')
+                ->where('filters.type', 'outlet')
+            );
+    }
+
     public function test_owner_can_create_outlet_with_audit_log(): void
     {
         $this->actingAs($this->owner())

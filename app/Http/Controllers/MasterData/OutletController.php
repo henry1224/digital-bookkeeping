@@ -18,14 +18,21 @@ class OutletController extends Controller
     public function index(Request $request): Response
     {
         $search = trim((string) $request->query('search'));
+        $statusQuery = $request->query('status');
+        $typeQuery = $request->query('type');
+        $status = is_string($statusQuery) && in_array($statusQuery, ['aktif', 'nonaktif'], true) ? $statusQuery : 'semua';
+        $type = is_string($typeQuery) && in_array($typeQuery, ['outlet', 'central_kitchen'], true) ? $typeQuery : 'semua';
 
         return Inertia::render('master-data/Outlets', [
-            'filters' => ['search' => $search],
+            'filters' => ['search' => $search, 'status' => $status, 'type' => $type],
             'outlets' => Outlet::query()
                 ->when($search !== '', fn ($query) => $query->where(function ($query) use ($search) {
                     $query->where('code', 'like', "%{$search}%")
                         ->orWhere('name', 'like', "%{$search}%");
                 }))
+                ->when($status === 'aktif', fn ($query) => $query->where('is_active', true))
+                ->when($status === 'nonaktif', fn ($query) => $query->where('is_active', false))
+                ->when($type !== 'semua', fn ($query) => $query->where('outlet_type', $type))
                 ->orderBy('code')
                 ->paginate(10)
                 ->withQueryString()

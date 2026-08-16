@@ -41,21 +41,94 @@ Vue sebelum dipakai; kalau belum ada, cukup ikuti aturan di dokumen ini.
 5. UI harus optimal untuk desktop terlebih dahulu.
 6. Form keuangan harus mencegah input ambigu, terutama uang, tanggal, outlet, dan akun.
 
+## Arah Visual Admin
+
+Tone visual: **financial calm** — bersih, tenang, profesional, dan mudah dibaca lama. UI harus terasa seperti cockpit operasional keuangan, bukan landing page.
+
+1. Gunakan kanvas terang hangat (`background`) dengan aksen teal/emerald dari `resources/css/app.css`.
+2. Pakai gradient hanya sebagai lapisan halus di hero/header, bukan dekorasi ramai.
+3. Utamakan kontras, whitespace, dan hierarchy; hindari card terlalu banyak border tebal.
+4. Motion harus terasa smooth tapi tidak mengganggu input data: transisi 150–220ms, `ease-out`, CSS-only.
+5. Data finansial tetap prioritas: angka rata kanan, status jelas, action utama konsisten.
+
+## Standar Layout Admin
+
+### App Shell
+
+1. Sidebar tetap `inset` dan collapsible; active menu wajib punya background accent + indikator kiri/ikon primary.
+2. Sidebar menu wajib dikelompokkan per domain: Ringkasan, Master Data, Operasional, Akuntansi/Laporan.
+3. Setiap item sidebar memakai icon tile `32px` radius `md`; item aktif memakai primary background pada tile.
+4. Item belum tersedia boleh disabled dengan badge `Segera`; jangan arahkan ke route kosong.
+5. Topbar/header sticky ringan dengan border bawah dan background transparan blur bila halaman panjang.
+6. Content wrapper default: `mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8`.
+7. Jarak antar section: 24px (`space-y-6`); antar item dalam card: 16px.
+8. Jangan pakai placeholder bawaan starter kit pada halaman yang sudah masuk scope produk.
+
+### Page Header
+
+1. Semua halaman admin punya header konsisten: eyebrow kecil, judul, deskripsi satu kalimat, action utama kanan.
+2. Header surface: `rounded-lg border bg-card/80 p-6 shadow-sm` + gradient halus hanya bila membantu konteks.
+3. Breadcrumb tetap di topbar; jangan ulang breadcrumb sebagai teks besar di page header.
+4. Judul halaman 28–32px, `tracking-tight`, maksimal 1 baris jika memungkinkan.
+
+### Cards & Surfaces
+
+1. Card default: `rounded-lg border bg-card shadow-sm`.
+2. Card interaktif boleh hover `-translate-y-0.5 shadow-md`, durasi 200ms.
+3. Pakai radius sedang (`rounded-md`/`rounded-lg`); hindari semua surface jadi terlalu bulat.
+4. Border pakai `border-border/70`; shadow halus, bukan shadow gelap.
+
+### List Page
+
+1. Pola wajib: Page Header → Table Header Filter Bar → Table → Pagination Footer.
+2. Search/filter/status ditempatkan di header table card, bukan breadcrumb atau page header.
+3. Action utama tetap di page header kanan; action filter/reset tetap di table header.
+4. Search table wajib debounce `400ms`; request filter wajib debounce pendek `150ms` dan membatalkan request lama bila ada.
+5. Clear search wajib flush langsung dan tidak memicu request ganda.
+6. Table header pakai uppercase kecil atau medium label; row hover `bg-muted/50`.
+7. Empty state berisi judul, penjelasan pendek, dan action jika user punya permission.
+8. Row action selalu di kolom kanan; destructive action butuh dialog konfirmasi.
+
+### Form & Dialog
+
+1. Dialog create/edit maksimal 640px; form panjang pindah ke halaman, bukan modal tinggi.
+2. Input group selalu label → input → error; error area tidak mengubah layout ekstrem.
+3. Primary action di kanan, secondary/cancel di kiri atau sebelum primary.
+4. Field wajib pakai teks `Wajib`, bukan hanya asterisk/warna.
+5. Save/post/approve/reject/close wajib punya loading state dan disable saat processing.
+
+### Motion & Responsiveness
+
+1. Gunakan `transition-[color,background-color,border-color,box-shadow,transform] duration-200 ease-out` untuk elemen interaktif.
+2. Jangan animasikan table row besar saat data banyak; cukup hover/focus state.
+3. Hormati `motion-reduce`: animasi dekoratif harus tetap aman bila dinonaktifkan browser.
+4. Desktop-first, tapi list/filter harus tetap usable di layar tablet.
+
+### Jangan Lakukan
+
+1. Jangan pakai link/footer bawaan Laravel starter kit pada admin produksi.
+2. Jangan campur palet biru lama dengan palet teal baru tanpa mapping token.
+3. Jangan bikin warna status custom per halaman; pakai status badge global.
+4. Jangan tambah library animasi/desain baru sebelum CSS + shadcn-vue tidak cukup.
+
 ## Design Tokens
 
 ### Colors
 
-| Token | Hex | Penggunaan |
+Sumber kebenaran token runtime: `resources/css/app.css`.
+
+| Token | Nilai Runtime | Penggunaan |
 |---|---|---|
-| primary | #1E40AF | Main action, active navigation |
-| primary-dark | #1E3A8A | Hover primary |
-| success | #047857 | Approved, posted, positive |
-| warning | #B45309 | Pending, variance warning |
-| danger | #B91C1C | Rejected, failed, destructive |
-| neutral-900 | #111827 | Primary text |
-| neutral-700 | #374151 | Secondary text |
-| neutral-100 | #F3F4F6 | Page background |
-| border | #E5E7EB | Borders |
+| background | `hsl(0 0% 100%)` | Page canvas |
+| foreground | `hsl(0 0% 3.9%)` | Primary text |
+| primary | `hsl(168 76% 36%)` | Main action, active navigation |
+| primary-foreground | `hsl(0 0% 100%)` | Text di atas primary |
+| secondary | `hsl(160 30% 94%)` | Soft secondary action |
+| muted | `hsl(165 25% 96%)` | Filter/table hover/background soft |
+| accent | `hsl(166 60% 92%)` | Active nav, subtle highlight |
+| destructive | `hsl(0 74% 47%)` | Rejected, failed, destructive |
+| border | `hsl(165 20% 88%)` | Borders |
+| ring | `hsl(168 76% 40%)` | Focus ring |
 
 ### Typography
 
@@ -80,9 +153,16 @@ Small 4px, medium 8px, large 12px.
 
 ### Button
 
-Variants: primary, secondary, ghost, danger.
-Sizes: sm, md, lg.
-States: default, hover, disabled, loading.
+Variants: primary, secondary, outline, ghost, danger.
+Sizes: sm, md, lg, icon.
+States: default, hover, focus, active, disabled, loading.
+
+1. Primary action memakai `primary` dan icon di kiri jika action menambah/menyimpan/memproses data.
+2. Secondary action memakai `outline` atau `secondary`, bukan primary kedua dalam satu area.
+3. Row action table wajib icon-only ukuran `36px` (`h-9 w-9`) dengan `title`, `aria-label`, dan teks `sr-only`.
+4. Variant row action mengikuti eproc: `edit` = primary tint, `warning` = nonaktifkan/hold, `success` = aktifkan/approve, `danger` = hapus/tolak.
+5. Reset/filter clear boleh icon-only `ghost` jika berada di filter bar.
+6. Primary page action tetap boleh icon + label eksplisit: `Tambah Outlet`, `Simpan`, `Proses`.
 
 ### Input
 
