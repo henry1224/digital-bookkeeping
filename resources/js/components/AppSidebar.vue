@@ -1,13 +1,20 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import {
+    Banknote,
     BookOpenCheck,
+    BookOpenText,
     Boxes,
     Building2,
     ChartColumn,
     ClipboardList,
+    Cog,
     LayoutGrid,
     Package,
+    Ruler,
+    Settings2,
+    Tags,
+    Truck,
     ReceiptText,
     WalletCards,
 } from '@lucide/vue';
@@ -61,6 +68,36 @@ const sidebarNavGroups: SidebarNavGroup[] = [
                 href: '/master-data/outlets',
                 icon: Building2,
             },
+            {
+                title: 'Satuan (UOM)',
+                href: '/master-data/uom',
+                icon: Ruler,
+            },
+            {
+                title: 'Kelompok Item',
+                icon: Tags,
+                badge: 'Segera',
+            },
+            {
+                title: 'Supplier',
+                icon: Truck,
+                badge: 'Segera',
+            },
+            {
+                title: 'Chart of Accounts',
+                icon: BookOpenText,
+                badge: 'Segera',
+            },
+            {
+                title: 'Item',
+                icon: Package,
+                badge: 'Segera',
+            },
+            {
+                title: 'Rekening Bank',
+                icon: Banknote,
+                badge: 'Segera',
+            },
         ],
     },
     {
@@ -104,6 +141,21 @@ const sidebarNavGroups: SidebarNavGroup[] = [
             {
                 title: 'Laporan',
                 icon: ChartColumn,
+                badge: 'Segera',
+            },
+        ],
+    },
+    {
+        title: 'Pengaturan',
+        items: [
+            {
+                title: 'Konfigurasi Outlet',
+                icon: Settings2,
+                badge: 'Segera',
+            },
+            {
+                title: 'Pengguna & Role',
+                icon: Cog,
                 badge: 'Segera',
             },
         ],
