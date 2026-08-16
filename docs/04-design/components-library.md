@@ -67,6 +67,7 @@
 7. `DataTablePagination`: footer pagination standar Inertia link.
 8. `RowActionMenu`: dropdown tunggal untuk seluruh tindakan pada satu baris tabel.
 9. `ConfirmDeleteDialog`: standar konfirmasi hapus; pakai untuk semua action destructive di admin, jangan pakai `window.confirm`.
+10. `AdminDataDialog`: shell wajib untuk modal lihat, tambah, dan edit pada halaman admin.
 
 ## Admin List Standard
 
@@ -82,6 +83,16 @@
 10. Pilihan jumlah data `10`, `25`, `50` ditempatkan paling kiri pada baris filter.
 11. Aksi tabel memakai satu `RowActionMenu`: **Lihat**, **Edit**, status, lalu **Hapus** paling bawah setelah pemisah.
 12. Aksi **Lihat** selalu tersedia. Aksi tambah, edit, status, dan hapus hanya tampil jika pengguna memiliki izin terkait.
+
+## AdminDataDialog
+
+1. Lokasi komponen: `resources/js/components/admin/AdminDataDialog.vue`.
+2. Gunakan ukuran `standard` untuk detail atau form sampai 4 field utama.
+3. Gunakan ukuran `wide` untuk form lebih dari 4 field, pilihan akun, relasi, atau isi dua kolom.
+4. Header, area isi, dan footer wajib memakai slot komponen; jangan membuat susunan modal baru per halaman.
+5. Area isi dapat digulir saat tinggi layar terbatas. Tombol aksi tetap berada pada footer.
+6. Detail data memakai grid kartu label dan nilai agar mudah dipindai.
+7. Tombol utama berada paling kanan; tombol batal atau tutup memakai `outline`.
 
 ## ConfirmDeleteDialog
 

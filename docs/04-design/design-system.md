@@ -93,14 +93,24 @@ Tone visual: **financial calm** — bersih, tenang, profesional, dan mudah dibac
 
 ### Form & Dialog
 
-1. Dialog create/edit maksimal 640px; form panjang pindah ke halaman, bukan modal tinggi.
-2. Input group selalu label → input → error; error area tidak mengubah layout ekstrem.
-3. Primary action di kanan, secondary/cancel di kiri atau sebelum primary.
-4. Field wajib pakai teks `Wajib`, bukan hanya asterisk/warna.
-5. Save/post/approve/reject/close wajib punya loading state dan disable saat processing.
-6. Delete wajib pakai `ConfirmDeleteDialog`, bukan `window.confirm`.
-7. Delete modal memakai header rose soft, body peringatan singkat, cancel outline, confirm destructive.
-8. Judul, penjelasan, bantuan, konfirmasi, dan pesan gagal memakai bahasa pengguna; istilah teknis internal tidak boleh tampil.
+1. Modal data wajib memakai `AdminDataDialog`; jangan menyusun `DialogContent` sendiri pada halaman admin.
+2. Ukuran `standard` dipakai untuk detail atau form sampai 4 field utama; ukuran `wide` dipakai untuk form lebih banyak atau layout dua kolom.
+3. Form yang tetap terlalu panjang setelah memakai `wide` harus dipindah ke halaman khusus.
+4. Input group selalu label → input → error; error area tidak mengubah layout ekstrem.
+5. Primary action di kanan, secondary/cancel di kiri atau sebelum primary.
+6. Field wajib pakai teks `Wajib`, bukan hanya asterisk/warna.
+7. Save/post/approve/reject/close wajib punya loading state dan disable saat processing.
+8. Delete wajib pakai `ConfirmDeleteDialog`, bukan `window.confirm`.
+9. Delete modal memakai header rose soft, body peringatan singkat, cancel outline, confirm destructive.
+10. Judul, penjelasan, bantuan, konfirmasi, dan pesan gagal memakai bahasa pengguna; istilah teknis internal tidak boleh tampil.
+
+### Proses Desain Wajib
+
+1. Sebelum membuat atau mengubah UI, baca `docs/04-design/design-system.md` dan `docs/04-design/components-library.md`.
+2. Gunakan skill `frontend-design` untuk pekerjaan halaman, komponen, modal, dan penyempurnaan visual.
+3. Jika komponen standar sudah tersedia, gunakan komponen tersebut agar tampilan tidak berubah antar menu.
+4. Komponen baru hanya dibuat jika pola tersebut dipakai ulang atau belum tersedia pada library saat ini.
+5. Setelah implementasi, lakukan pemeriksaan desktop, tablet, mode terang, mode gelap, fokus keyboard, dan scroll modal.
 
 ### Motion & Responsiveness
 

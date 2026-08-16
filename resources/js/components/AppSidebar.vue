@@ -75,8 +75,8 @@ const sidebarNavGroups: SidebarNavGroup[] = [
             },
             {
                 title: 'Kelompok Item',
+                href: '/master-data/item-groups',
                 icon: Tags,
-                badge: 'Segera',
             },
             {
                 title: 'Supplier',

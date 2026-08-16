@@ -49,21 +49,35 @@ const dialogOpen = computed({
     <Dialog v-model:open="dialogOpen">
         <DialogContent class="overflow-hidden p-0 sm:max-w-md">
             <DialogHeader
-                class="border-b bg-rose-50 px-6 py-5 dark:bg-rose-950/20"
+                class="border-b border-rose-200/70 bg-gradient-to-br from-rose-100 via-rose-50 to-card px-6 py-5 text-left dark:border-rose-900/70 dark:from-rose-950/50 dark:via-rose-950/20 dark:to-card"
             >
-                <DialogTitle>{{ title }}</DialogTitle>
-                <DialogDescription>{{ description }}</DialogDescription>
+                <p
+                    class="text-[11px] font-semibold tracking-[0.16em] text-rose-700 uppercase dark:text-rose-300"
+                >
+                    Perlu Konfirmasi
+                </p>
+                <DialogTitle class="text-xl tracking-tight">{{
+                    title
+                }}</DialogTitle>
+                <DialogDescription class="leading-6">{{
+                    description
+                }}</DialogDescription>
             </DialogHeader>
 
             <div class="space-y-3 px-6 py-5">
                 <div
-                    class="rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800 dark:border-rose-900/70 dark:bg-rose-950/30 dark:text-rose-200"
+                    class="rounded-lg border border-rose-200 bg-rose-50/70 p-4 dark:border-rose-900/70 dark:bg-rose-950/30"
                 >
-                    Yakin hapus
-                    <span v-if="subject" class="font-semibold">
-                        {{ subject }}
-                    </span>
-                    ?
+                    <p
+                        class="text-xs font-medium text-rose-700 dark:text-rose-300"
+                    >
+                        Data yang dipilih
+                    </p>
+                    <p
+                        class="mt-1 font-semibold text-rose-900 dark:text-rose-100"
+                    >
+                        {{ subject || 'Data ini' }}
+                    </p>
                 </div>
                 <p class="text-sm text-muted-foreground">{{ note }}</p>
             </div>
