@@ -6,26 +6,28 @@
 2. SidebarNavigation
 3. Topbar
 4. Breadcrumbs
-5. PageHeader
+5. AdminPageHeader
 6. SurfaceCard
 7. MetricCard
-8. DataTable
-9. FilterBar
-10. Pagination
-11. MoneyInput
-12. DateRangePicker
-13. OutletSelector
-14. StatusBadge
-15. ApprovalTimeline
-16. AuditLogPanel
-17. ConfirmDialog
-18. FileUploader
-19. ExportButton
-20. EmptyState
-21. LoadingSkeleton
-22. FormSection
-23. PeriodStatusBanner
-24. RequiredLabel
+8. DataTableCard
+9. DataTableSearch
+10. DataTableFilterSelect
+11. DataTablePagination
+12. RowActionButton
+13. MoneyInput
+14. DateRangePicker
+15. OutletSelector
+16. StatusBadge
+17. ApprovalTimeline
+18. AuditLogPanel
+19. ConfirmDeleteDialog
+20. FileUploader
+21. ExportButton
+22. EmptyState
+23. LoadingSkeleton
+24. FormSection
+25. PeriodStatusBanner
+26. RequiredLabel
 
 ## Domain Components
 
@@ -47,7 +49,7 @@
 
 1. Jangan buat komponen domain jika shared component cukup.
 2. Jangan buat abstraction untuk satu halaman saja.
-3. DataTable harus menjadi pola utama untuk list page.
+3. `DataTableCard` harus menjadi pola utama untuk list page.
 4. AuditLogPanel wajib tersedia di detail financial transaction.
 5. ApprovalTimeline wajib tersedia di approval-based transaction.
 6. JournalEntriesEditor harus memvalidasi total debit = total credit di UI sebelum submit, tetapi server tetap sumber kebenaran.
@@ -56,8 +58,33 @@
 
 ## Standar Visual Komponen
 
-1. `PageHeader`: eyebrow, title, description, primary action; radius `lg`, border halus, gradient tipis opsional.
+1. `AdminPageHeader`: eyebrow, title, description, primary action; radius `lg`, border halus, gradient tipis opsional.
 2. `SurfaceCard`: `rounded-lg border bg-card shadow-sm`; dipakai untuk table, form section, dan report block.
 3. `MetricCard`: angka besar rata kiri, label kecil, trend badge opsional; maksimal 4 card per row desktop.
-4. `DataTable`: sticky-ish header bila table panjang, row hover soft, action kanan, angka uang rata kanan.
-5. `FilterBar`: ditempatkan di header table card; search kiri, filter/status kanan, reset filter ghost button bila ada filter aktif.
+4. `DataTableCard`: table shell untuk title, description, filter, meta, table, dan footer.
+5. `DataTableSearch`: search kiri di header table; clear button wajib flush langsung.
+6. `DataTableFilterSelect`: filter/status kanan search; native select, bukan custom dropdown.
+7. `DataTablePagination`: footer pagination standar Inertia link.
+8. `RowActionButton`: icon-only row action dengan intent `edit`, `warning`, `success`, `danger`.
+9. `ConfirmDeleteDialog`: standar konfirmasi hapus; pakai untuk semua action destructive di admin, jangan pakai `window.confirm`.
+
+## Admin List Standard
+
+1. `AdminPageHeader`: `resources/js/components/admin/AdminPageHeader.vue`.
+2. `DataTableCard`: `resources/js/components/admin/DataTableCard.vue`.
+3. `DataTableSearch`: `resources/js/components/admin/DataTableSearch.vue`.
+4. `DataTableFilterSelect`: `resources/js/components/admin/DataTableFilterSelect.vue`.
+5. `DataTablePagination`: `resources/js/components/admin/DataTablePagination.vue`.
+6. `RowActionButton`: `resources/js/components/admin/RowActionButton.vue`.
+7. Urutan halaman list: `AdminPageHeader` → `DataTableCard` filters/meta → `<thead>` + `<tbody>` → `DataTablePagination`.
+8. Kolom dan cell tetap milik halaman karena tiap modul beda field; shell, filter, pagination, dan action wajib pakai komponen standar.
+9. Filter request wajib pakai `resources/js/lib/debounce.ts`: search `400ms`, request filter `150ms`, clear/reset flush langsung.
+
+## ConfirmDeleteDialog
+
+1. Lokasi komponen: `resources/js/components/ConfirmDeleteDialog.vue`.
+2. Trigger dari row action icon `Trash2` dengan style danger.
+3. Copy wajib menyebut objek yang dihapus, efek soft delete, dan audit log.
+4. Confirm button pakai `variant="destructive"`, disabled saat `processing`.
+5. Cancel button pakai `variant="outline"`, menutup modal tanpa request.
+6. Master data memakai soft delete; hard delete hanya boleh jika dokumen modul menyebut eksplisit.

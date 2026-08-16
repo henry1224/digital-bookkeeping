@@ -91,6 +91,23 @@ class OutletController extends Controller
         return to_route('master-data.outlets.index');
     }
 
+    public function destroy(Request $request, Outlet $outlet): RedirectResponse
+    {
+        $request->validate(['updated_at' => ['required', 'date']]);
+        abort_unless($request->user()?->can('master-data.update'), 403);
+        abort_unless($outlet->updated_at?->toJSON() === $request->input('updated_at'), 409, 'Data outlet sudah berubah. Muat ulang sebelum menghapus.');
+
+        DB::transaction(function () use ($request, $outlet) {
+            $before = $outlet->getAttributes();
+
+            $outlet->delete();
+
+            $this->audit($request, 'outlets.delete', $outlet, $before, $outlet->getAttributes());
+        });
+
+        return to_route('master-data.outlets.index');
+    }
+
     /** @param array<string, mixed>|null $before @param array<string, mixed> $after */
     private function audit(Request $request, string $action, Outlet $outlet, ?array $before, array $after): void
     {

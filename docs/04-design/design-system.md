@@ -81,13 +81,14 @@ Tone visual: **financial calm** — bersih, tenang, profesional, dan mudah dibac
 ### List Page
 
 1. Pola wajib: Page Header → Table Header Filter Bar → Table → Pagination Footer.
-2. Search/filter/status ditempatkan di header table card, bukan breadcrumb atau page header.
-3. Action utama tetap di page header kanan; action filter/reset tetap di table header.
-4. Search table wajib debounce `400ms`; request filter wajib debounce pendek `150ms` dan membatalkan request lama bila ada.
-5. Clear search wajib flush langsung dan tidak memicu request ganda.
-6. Table header pakai uppercase kecil atau medium label; row hover `bg-muted/50`.
-7. Empty state berisi judul, penjelasan pendek, dan action jika user punya permission.
-8. Row action selalu di kolom kanan; destructive action butuh dialog konfirmasi.
+2. Admin list wajib pakai `AdminPageHeader`, `DataTableCard`, `DataTableSearch`, `DataTableFilterSelect`, `DataTablePagination`, dan `RowActionButton`.
+3. Search/filter/status ditempatkan di header table card, bukan breadcrumb atau page header.
+4. Action utama tetap di page header kanan; action filter/reset tetap di table header.
+5. Search table wajib debounce `400ms`; request filter wajib debounce pendek `150ms` dan membatalkan request lama bila ada.
+6. Clear search wajib flush langsung dan tidak memicu request ganda.
+7. Table header pakai uppercase kecil atau medium label; row hover `hover:bg-emerald-50/60 dark:hover:bg-emerald-950/20`.
+8. Empty state berisi judul, penjelasan pendek, dan action jika user punya permission.
+9. Row action selalu di kolom kanan; destructive action butuh `ConfirmDeleteDialog`.
 
 ### Form & Dialog
 
@@ -96,6 +97,8 @@ Tone visual: **financial calm** — bersih, tenang, profesional, dan mudah dibac
 3. Primary action di kanan, secondary/cancel di kiri atau sebelum primary.
 4. Field wajib pakai teks `Wajib`, bukan hanya asterisk/warna.
 5. Save/post/approve/reject/close wajib punya loading state dan disable saat processing.
+6. Delete wajib pakai `ConfirmDeleteDialog`, bukan `window.confirm`.
+7. Delete modal memakai header rose soft, body peringatan singkat, cancel outline, confirm destructive.
 
 ### Motion & Responsiveness
 
@@ -159,7 +162,7 @@ States: default, hover, focus, active, disabled, loading.
 
 1. Primary action memakai `primary` dan icon di kiri jika action menambah/menyimpan/memproses data.
 2. Secondary action memakai `outline` atau `secondary`, bukan primary kedua dalam satu area.
-3. Row action table wajib icon-only ukuran `36px` (`h-9 w-9`) dengan `title`, `aria-label`, dan teks `sr-only`.
+3. Row action table wajib pakai `RowActionButton` ukuran `36px` (`h-9 w-9`) dengan `title`, `aria-label`, dan teks `sr-only`.
 4. Variant row action mengikuti eproc: `edit` = primary tint, `warning` = nonaktifkan/hold, `success` = aktifkan/approve, `danger` = hapus/tolak.
 5. Reset/filter clear boleh icon-only `ghost` jika berada di filter bar.
 6. Primary page action tetap boleh icon + label eksplisit: `Tambah Outlet`, `Simpan`, `Proses`.
@@ -218,5 +221,6 @@ Gunakan label konsisten:
 3. Required fields ditandai dengan teks, bukan hanya warna.
 4. Save draft tersedia pada flow yang mendukung draft.
 5. Confirmation wajib untuk posting, approving, rejecting, closing, deleting.
-6. Closed period banner harus muncul saat record berada dalam periode tertutup.
-7. Field outlet wajib terlihat pada data outlet-scoped kecuali user hanya punya satu outlet.
+6. Destructive confirmation wajib menyebut objek target dan efek aksi sebelum user klik confirm.
+7. Closed period banner harus muncul saat record berada dalam periode tertutup.
+8. Field outlet wajib terlihat pada data outlet-scoped kecuali user hanya punya satu outlet.
