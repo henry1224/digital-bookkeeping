@@ -126,6 +126,20 @@ class OutletPageTest extends TestCase
         $this->assertTrue(AuditLog::where('action', 'outlets.toggle')->where('auditable_id', $outlet->id)->exists());
     }
 
+    public function test_owner_can_delete_outlet_with_audit_log(): void
+    {
+        $this->actingAs($this->owner());
+
+        $outlet = Outlet::firstOrFail();
+
+        $this->delete(route('master-data.outlets.destroy', $outlet), [
+            'updated_at' => $outlet->updated_at?->toJSON(),
+        ])->assertRedirect(route('master-data.outlets.index'));
+
+        $this->assertSoftDeleted($outlet);
+        $this->assertTrue(AuditLog::where('action', 'outlets.delete')->where('auditable_id', $outlet->id)->exists());
+    }
+
     public function test_user_without_create_permission_cannot_create_outlet(): void
     {
         $this->actingAs(User::factory()->create())

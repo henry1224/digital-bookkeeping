@@ -17,6 +17,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('master-data/outlets', [OutletController::class, 'store'])->name('master-data.outlets.store');
     Route::patch('master-data/outlets/{outlet}', [OutletController::class, 'update'])->name('master-data.outlets.update');
     Route::patch('master-data/outlets/{outlet}/toggle', [OutletController::class, 'toggle'])->name('master-data.outlets.toggle');
+    Route::delete('master-data/outlets/{outlet}', [OutletController::class, 'destroy'])->name('master-data.outlets.destroy');
 });
 
 require __DIR__.'/settings.php';
