@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\ItemGroup;
 use App\Models\Outlet;
+use App\Models\Supplier;
 use App\Models\UnitOfMeasure;
 use Illuminate\Database\Seeder;
 
@@ -55,6 +56,42 @@ class MasterDataSeeder extends Seeder
                     'name' => $name,
                     'inventory_account_code' => $inventoryAccountCode,
                     'revenue_account_code' => $revenueAccountCode,
+                    'is_active' => true,
+                ],
+            );
+        }
+
+        foreach ([
+            'Segar Abadi',
+            'Pangan Nusantara',
+            'Borneo Protein',
+            'Laut Makmur',
+            'Sayur Sejahtera',
+            'Tani Bersama',
+            'Rempah Indonesia',
+            'Sumber Bumbu',
+            'Dairy Prima',
+            'Beverage Mandiri',
+            'Kemasan Utama',
+            'Kertas Bersih',
+            'Higienis Sentosa',
+            'Peralatan Dapur',
+            'Gas Energi',
+            'Frozen Food Jaya',
+            'Roti Harian',
+            'Buah Tropis',
+            'Sembako Berkah',
+            'Distribusi Kaltim',
+        ] as $index => $name) {
+            $number = $index + 1;
+
+            Supplier::updateOrCreate(
+                ['code' => sprintf('SUP-%03d', $number)],
+                [
+                    'name' => $name,
+                    'phone' => sprintf('0542-700%04d', $number),
+                    'email' => sprintf('supplier%02d@example.test', $number),
+                    'address' => 'Balikpapan, Kalimantan Timur',
                     'is_active' => true,
                 ],
             );

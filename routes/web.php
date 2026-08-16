@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\MasterData\ItemGroupController;
 use App\Http\Controllers\MasterData\OutletController;
+use App\Http\Controllers\MasterData\SupplierController;
 use App\Http\Controllers\MasterData\UnitOfMeasureController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -36,6 +37,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('master-data/item-groups/{itemGroup}', [ItemGroupController::class, 'update'])->name('master-data.item-groups.update');
     Route::patch('master-data/item-groups/{itemGroup}/toggle', [ItemGroupController::class, 'toggle'])->name('master-data.item-groups.toggle');
     Route::delete('master-data/item-groups/{itemGroup}', [ItemGroupController::class, 'destroy'])->name('master-data.item-groups.destroy');
+
+    Route::get('master-data/suppliers', [SupplierController::class, 'index'])
+        ->middleware('can:master-data.view')
+        ->name('master-data.suppliers.index');
+    Route::post('master-data/suppliers', [SupplierController::class, 'store'])->name('master-data.suppliers.store');
+    Route::patch('master-data/suppliers/{supplier}', [SupplierController::class, 'update'])->name('master-data.suppliers.update');
+    Route::patch('master-data/suppliers/{supplier}/toggle', [SupplierController::class, 'toggle'])->name('master-data.suppliers.toggle');
+    Route::delete('master-data/suppliers/{supplier}', [SupplierController::class, 'destroy'])->name('master-data.suppliers.destroy');
 });
 
 require __DIR__.'/settings.php';
