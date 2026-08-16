@@ -80,8 +80,8 @@ const sidebarNavGroups: SidebarNavGroup[] = [
             },
             {
                 title: 'Supplier',
+                href: '/master-data/suppliers',
                 icon: Truck,
-                badge: 'Segera',
             },
             {
                 title: 'Chart of Accounts',

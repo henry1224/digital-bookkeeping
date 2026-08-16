@@ -135,7 +135,7 @@ Gunakan checklist ini setiap modul baru.
 | Item groups | DONE | Schema/model/seeder + UI list, filter, create, view, update, toggle, soft delete, concurrency guard, audit log, dan feature test. |
 | UOM | DONE | Schema/model/seeder + UI list, filter, create, update, toggle, soft delete, optimistic locking, audit log, dan feature test (`d84d92b`). |
 | Items | DONE | Schema/model. Seeder item transaksi belum. UI belum. |
-| Suppliers | DONE | Schema/model. UI belum. |
+| Suppliers | DONE | Schema/model + UI list, filter, create, view, update, toggle, soft delete, concurrency guard, audit log, dan feature test. |
 | Bank accounts | DONE | Schema/model. UI belum. |
 
 ### Accounting Core
