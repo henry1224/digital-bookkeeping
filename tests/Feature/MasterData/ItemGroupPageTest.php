@@ -110,7 +110,11 @@ class ItemGroupPageTest extends TestCase
     public function test_owner_can_update_toggle_and_delete_unused_group_with_audit_logs(): void
     {
         $this->actingAs($this->owner());
-        $group = ItemGroup::where('code', 'RAW-VEG')->firstOrFail();
+        $group = ItemGroup::create([
+            'code' => 'UNUSED-GROUP',
+            'name' => 'Kelompok Kosong',
+            'is_active' => true,
+        ]);
 
         $this->patch(route('master-data.item-groups.update', $group), [
             'code' => $group->code,

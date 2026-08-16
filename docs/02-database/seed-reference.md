@@ -69,6 +69,6 @@ Stock Adjustment, Manual Journal, Period Reopen) sudah didefinisikan di sana seb
 
 ## Catatan Seed
 
-1. Seeder hanya untuk data referensi/master (roles, permissions, COA, UoM, outlet, item group, approval matrix).
+1. Seeder hanya untuk data referensi/master (roles, permissions, COA, UoM, outlet, item group, item, supplier, dan approval matrix).
 2. Transaksi sample (daily sales, PO, dst) di `docs/08-testing/test-data.md` — untuk test/demo, bukan seed produksi.
 3. Semua money `DECIMAL(18,2)`, quantity `DECIMAL(18,4)`.
