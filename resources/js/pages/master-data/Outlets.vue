@@ -12,6 +12,7 @@ import {
     X,
 } from '@lucide/vue';
 import { computed, ref, watch } from 'vue';
+import AdminDataDialog from '@/components/admin/AdminDataDialog.vue';
 import AdminPageHeader from '@/components/admin/AdminPageHeader.vue';
 import DataTableCard from '@/components/admin/DataTableCard.vue';
 import DataTableFilterSelect from '@/components/admin/DataTableFilterSelect.vue';
@@ -21,14 +22,6 @@ import RowActionMenu from '@/components/admin/RowActionMenu.vue';
 import ConfirmDeleteDialog from '@/components/ConfirmDeleteDialog.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
 import {
     DropdownMenuItem,
     DropdownMenuSeparator,
@@ -381,9 +374,6 @@ defineOptions({
                     <RotateCcw class="size-3.5" />
                     <span class="sr-only">Reset filter</span>
                 </Button>
-                <Badge variant="secondary" class="w-fit rounded-md px-3 py-1">
-                    {{ outlets.total }} data
-                </Badge>
             </template>
             <thead
                 class="bg-gradient-to-r from-muted via-muted/70 to-card text-left text-xs tracking-wide text-muted-foreground uppercase"
@@ -496,160 +486,126 @@ defineOptions({
             </template>
         </DataTableCard>
 
-        <Dialog v-model:open="viewDialogOpen">
-            <DialogContent class="sm:max-w-lg">
-                <DialogHeader>
-                    <DialogTitle>Detail Outlet</DialogTitle>
-                    <DialogDescription>
-                        Informasi lengkap outlet yang dipilih.
-                    </DialogDescription>
-                </DialogHeader>
+        <AdminDataDialog
+            v-model:open="viewDialogOpen"
+            title="Detail Outlet"
+            description="Informasi lengkap outlet yang dipilih."
+        >
+            <dl v-if="viewingOutlet" class="grid gap-3 sm:grid-cols-2">
+                <div
+                    v-for="[label, value] in [
+                        ['Kode', viewingOutlet.code],
+                        ['Nama', viewingOutlet.name],
+                        ['Jenis', outletTypeLabel(viewingOutlet.outlet_type)],
+                        ['Zona Waktu', viewingOutlet.timezone],
+                        [
+                            'Status',
+                            viewingOutlet.is_active ? 'Aktif' : 'Nonaktif',
+                        ],
+                        [
+                            'Terakhir Diperbarui',
+                            formatDate(viewingOutlet.updated_at),
+                        ],
+                    ]"
+                    :key="label"
+                    class="rounded-lg border border-border/70 bg-muted/20 p-4"
+                >
+                    <dt class="text-xs font-medium text-muted-foreground">
+                        {{ label }}
+                    </dt>
+                    <dd class="mt-1 font-semibold text-foreground">
+                        {{ value }}
+                    </dd>
+                </div>
+            </dl>
+            <template #footer>
+                <Button variant="outline" @click="viewDialogOpen = false"
+                    >Tutup</Button
+                >
+            </template>
+        </AdminDataDialog>
 
-                <dl v-if="viewingOutlet" class="grid gap-4 sm:grid-cols-2">
-                    <div>
-                        <dt class="text-xs text-muted-foreground">Kode</dt>
-                        <dd class="font-medium">{{ viewingOutlet.code }}</dd>
-                    </div>
-                    <div>
-                        <dt class="text-xs text-muted-foreground">Nama</dt>
-                        <dd class="font-medium">{{ viewingOutlet.name }}</dd>
-                    </div>
-                    <div>
-                        <dt class="text-xs text-muted-foreground">Jenis</dt>
-                        <dd>
-                            {{ outletTypeLabel(viewingOutlet.outlet_type) }}
-                        </dd>
-                    </div>
-                    <div>
-                        <dt class="text-xs text-muted-foreground">
-                            Zona Waktu
-                        </dt>
-                        <dd>{{ viewingOutlet.timezone }}</dd>
-                    </div>
-                    <div>
-                        <dt class="text-xs text-muted-foreground">Status</dt>
-                        <dd>
-                            {{ viewingOutlet.is_active ? 'Aktif' : 'Nonaktif' }}
-                        </dd>
-                    </div>
-                    <div>
-                        <dt class="text-xs text-muted-foreground">
-                            Terakhir Diperbarui
-                        </dt>
-                        <dd>{{ formatDate(viewingOutlet.updated_at) }}</dd>
-                    </div>
-                </dl>
+        <AdminDataDialog
+            v-model:open="dialogOpen"
+            :title="editingOutlet ? 'Edit Outlet' : 'Tambah Outlet'"
+            description="Lengkapi identitas outlet yang digunakan dalam kegiatan operasional dan laporan."
+        >
+            <form id="outlet-form" class="space-y-5" @submit.prevent="submit">
+                <div class="grid gap-2">
+                    <Label for="code">Kode</Label>
+                    <Input id="code" v-model="form.code" placeholder="BPN-C" />
+                    <p v-if="form.errors.code" class="text-sm text-destructive">
+                        {{ form.errors.code }}
+                    </p>
+                </div>
 
-                <DialogFooter>
-                    <Button variant="outline" @click="viewDialogOpen = false">
-                        Tutup
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+                <div class="grid gap-2">
+                    <Label for="name">Nama</Label>
+                    <Input
+                        id="name"
+                        v-model="form.name"
+                        placeholder="Balikpapan C"
+                    />
+                    <p v-if="form.errors.name" class="text-sm text-destructive">
+                        {{ form.errors.name }}
+                    </p>
+                </div>
 
-        <Dialog v-model:open="dialogOpen">
-            <DialogContent class="overflow-hidden p-0 sm:max-w-xl">
-                <DialogHeader class="border-b bg-muted/30 px-6 py-5">
-                    <DialogTitle>{{
-                        editingOutlet ? 'Edit Outlet' : 'Tambah Outlet'
-                    }}</DialogTitle>
-                    <DialogDescription>
-                        Kode outlet harus unik. Outlet nonaktif tetap tersimpan
-                        untuk histori.
-                    </DialogDescription>
-                </DialogHeader>
-
-                <form class="space-y-4 px-6 py-5" @submit.prevent="submit">
-                    <div class="grid gap-2">
-                        <Label for="code">Kode</Label>
-                        <Input
-                            id="code"
-                            v-model="form.code"
-                            placeholder="BPN-C"
-                        />
-                        <p
-                            v-if="form.errors.code"
-                            class="text-sm text-destructive"
-                        >
-                            {{ form.errors.code }}
-                        </p>
-                    </div>
-
-                    <div class="grid gap-2">
-                        <Label for="name">Nama</Label>
-                        <Input
-                            id="name"
-                            v-model="form.name"
-                            placeholder="Balikpapan C"
-                        />
-                        <p
-                            v-if="form.errors.name"
-                            class="text-sm text-destructive"
-                        >
-                            {{ form.errors.name }}
-                        </p>
-                    </div>
-
-                    <div class="grid gap-2">
-                        <Label for="outlet_type">Tipe</Label>
-                        <select
-                            id="outlet_type"
-                            v-model="form.outlet_type"
-                            class="h-9 rounded-md border bg-background px-3 text-sm"
-                        >
-                            <option value="outlet">Outlet</option>
-                            <option value="central_kitchen">
-                                Central Kitchen
-                            </option>
-                        </select>
-                        <p
-                            v-if="form.errors.outlet_type"
-                            class="text-sm text-destructive"
-                        >
-                            {{ form.errors.outlet_type }}
-                        </p>
-                    </div>
-
-                    <div class="grid gap-2">
-                        <Label for="timezone">Zona Waktu</Label>
-                        <Input id="timezone" v-model="form.timezone" readonly />
-                        <p
-                            v-if="form.errors.timezone"
-                            class="text-sm text-destructive"
-                        >
-                            {{ form.errors.timezone }}
-                        </p>
-                    </div>
-
-                    <label class="flex items-center gap-2 text-sm">
-                        <input
-                            v-model="form.is_active"
-                            type="checkbox"
-                            class="size-4 rounded border"
-                        />
-                        Aktif
-                    </label>
-
-                    <DialogFooter
-                        class="-mx-6 -mb-5 border-t bg-muted/20 px-6 py-4"
+                <div class="grid gap-2">
+                    <Label for="outlet_type">Tipe</Label>
+                    <select
+                        id="outlet_type"
+                        v-model="form.outlet_type"
+                        class="h-9 rounded-md border bg-background px-3 text-sm"
                     >
-                        <Button
-                            type="button"
-                            variant="outline"
-                            @click="dialogOpen = false"
-                        >
-                            <X class="size-4" />
-                            Batal
-                        </Button>
-                        <Button type="submit" :disabled="form.processing">
-                            <Save class="size-4" />
-                            Simpan
-                        </Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
+                        <option value="outlet">Outlet</option>
+                        <option value="central_kitchen">Central Kitchen</option>
+                    </select>
+                    <p
+                        v-if="form.errors.outlet_type"
+                        class="text-sm text-destructive"
+                    >
+                        {{ form.errors.outlet_type }}
+                    </p>
+                </div>
+
+                <div class="grid gap-2">
+                    <Label for="timezone">Zona Waktu</Label>
+                    <Input id="timezone" v-model="form.timezone" readonly />
+                    <p
+                        v-if="form.errors.timezone"
+                        class="text-sm text-destructive"
+                    >
+                        {{ form.errors.timezone }}
+                    </p>
+                </div>
+
+                <label class="flex items-center gap-2 text-sm">
+                    <input
+                        v-model="form.is_active"
+                        type="checkbox"
+                        class="size-4 rounded border"
+                    />
+                    Aktif
+                </label>
+            </form>
+            <template #footer>
+                <Button
+                    type="button"
+                    variant="outline"
+                    @click="dialogOpen = false"
+                >
+                    <X class="size-4" /> Batal
+                </Button>
+                <Button
+                    type="submit"
+                    form="outlet-form"
+                    :disabled="form.processing"
+                >
+                    <Save class="size-4" /> Simpan
+                </Button>
+            </template>
+        </AdminDataDialog>
 
         <ConfirmDeleteDialog
             v-model:open="deleteDialogOpen"

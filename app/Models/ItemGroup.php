@@ -25,6 +25,12 @@ class ItemGroup extends Model
         return $this->hasMany(self::class, 'parent_id');
     }
 
+    /** @return HasMany<Item, $this> */
+    public function items(): HasMany
+    {
+        return $this->hasMany(Item::class);
+    }
+
     protected function casts(): array
     {
         return ['is_active' => 'boolean'];

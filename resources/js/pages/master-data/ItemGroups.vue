@@ -31,42 +31,35 @@ import { Label } from '@/components/ui/label';
 import { formatDate } from '@/lib/date';
 import { useDebounceFn } from '@/lib/debounce';
 
-type UnitOfMeasure = {
+type Option = { id?: number; code: string; name: string };
+type ItemGroup = {
     id: number;
     code: string;
     name: string;
-    base_code: string;
-    factor: string;
+    parent_id: number | null;
+    parent: Option | null;
+    inventory_account_code: string | null;
+    revenue_account_code: string | null;
     is_active: boolean;
     items_count: number;
+    children_count: number;
     updated_at: string;
 };
-
-type PageLink = {
-    url: string | null;
-    label: string;
-    active: boolean;
-};
-
-type UnitFilters = {
-    search: string;
-    status: string;
-    per_page: string;
-};
-
-type CancelToken = {
-    cancel?: () => void;
-};
+type PageLink = { url: string | null; label: string; active: boolean };
+type Filters = { search: string; status: string; per_page: string };
+type CancelToken = { cancel?: () => void };
 
 const props = defineProps<{
-    filters: UnitFilters;
-    units: {
-        data: UnitOfMeasure[];
+    filters: Filters;
+    groups: {
+        data: ItemGroup[];
         links: PageLink[];
         from: number | null;
         to: number | null;
         total: number;
     };
+    parentOptions: Option[];
+    accountOptions: Option[];
 }>();
 
 const page = usePage();
@@ -80,16 +73,17 @@ const search = ref(props.filters.search);
 const filterStatus = ref(props.filters.status ?? 'semua');
 const perPage = ref(props.filters.per_page ?? '10');
 const dialogOpen = ref(false);
-const viewingUnit = ref<UnitOfMeasure | null>(null);
-const editingUnit = ref<UnitOfMeasure | null>(null);
-const deletingUnit = ref<UnitOfMeasure | null>(null);
+const viewingGroup = ref<ItemGroup | null>(null);
+const editingGroup = ref<ItemGroup | null>(null);
+const deletingGroup = ref<ItemGroup | null>(null);
 const deleteProcessing = ref(false);
 const deleteError = ref('');
 const form = useForm({
     code: '',
     name: '',
-    base_code: '',
-    factor: '1.000000',
+    parent_id: '',
+    inventory_account_code: '',
+    revenue_account_code: '',
     is_active: true,
     updated_at: '',
 });
@@ -100,25 +94,39 @@ const hasActiveFilters = computed(
         filterStatus.value !== 'semua' ||
         perPage.value !== '10',
 );
-const deleteDialogOpen = computed({
-    get: () => deletingUnit.value !== null,
+const viewDialogOpen = computed({
+    get: () => viewingGroup.value !== null,
     set: (open) => {
         if (!open) {
-            deletingUnit.value = null;
+            viewingGroup.value = null;
+        }
+    },
+});
+const deleteDialogOpen = computed({
+    get: () => deletingGroup.value !== null,
+    set: (open) => {
+        if (!open) {
+            deletingGroup.value = null;
             deleteError.value = '';
         }
     },
 });
-const viewDialogOpen = computed({
-    get: () => viewingUnit.value !== null,
-    set: (open) => {
-        if (!open) {
-            viewingUnit.value = null;
-        }
-    },
-});
+const availableParents = computed(() =>
+    props.parentOptions.filter(
+        (option) => option.id !== editingGroup.value?.id,
+    ),
+);
+const accountLabel = (code: string | null) => {
+    if (!code) {
+        return 'Belum ditentukan';
+    }
 
-const activeFilters = (overrides: Partial<UnitFilters> = {}) => {
+    const account = props.accountOptions.find((option) => option.code === code);
+
+    return account ? `${account.code} — ${account.name}` : code;
+};
+
+const activeFilters = (overrides: Partial<Filters> = {}) => {
     const filters = {
         search: search.value,
         status: filterStatus.value,
@@ -127,28 +135,23 @@ const activeFilters = (overrides: Partial<UnitFilters> = {}) => {
     };
 
     return Object.fromEntries(
-        Object.entries(filters).filter(([key, value]) => {
-            if (key === 'search') {
-                return String(value ?? '').trim() !== '';
-            }
-
-            return value !== 'semua';
-        }),
+        Object.entries(filters).filter(([key, value]) =>
+            key === 'search'
+                ? String(value ?? '').trim() !== ''
+                : value !== 'semua',
+        ),
     );
 };
 
 let cancelToken: CancelToken | null = null;
 let skipNextSearchWatch = false;
-
-const visitFilters = (overrides: Partial<UnitFilters> = {}) => {
+const visitFilters = (overrides: Partial<Filters> = {}) => {
     cancelToken?.cancel?.();
-
     let visitToken: CancelToken | null = null;
-
-    router.get('/master-data/uom', activeFilters(overrides), {
+    router.get('/master-data/item-groups', activeFilters(overrides), {
         preserveState: true,
         replace: true,
-        only: ['filters', 'units'],
+        only: ['filters', 'groups'],
         onCancelToken: (token) => {
             visitToken = token;
             cancelToken = token;
@@ -160,17 +163,12 @@ const visitFilters = (overrides: Partial<UnitFilters> = {}) => {
         },
     });
 };
-
 const requestFilters = useDebounceFn(visitFilters, 150);
 const searchFilters = useDebounceFn(
     (value: string) => requestFilters({ search: value }),
     400,
 );
-
-const applyFilters = (
-    overrides: Partial<UnitFilters> = {},
-    immediate = false,
-) => {
+const applyFilters = (overrides: Partial<Filters> = {}, immediate = false) => {
     if (Object.prototype.hasOwnProperty.call(overrides, 'search')) {
         const nextSearch = overrides.search ?? '';
 
@@ -202,17 +200,16 @@ const clearSearch = () => {
     searchFilters.cancel();
     applyFilters({ search: '' }, true);
 };
-
 const resetFilters = () =>
     applyFilters({ search: '', status: 'semua', per_page: '10' }, true);
-
 const openCreate = () => {
-    editingUnit.value = null;
+    editingGroup.value = null;
     form.defaults({
         code: '',
         name: '',
-        base_code: '',
-        factor: '1.000000',
+        parent_id: '',
+        inventory_account_code: '',
+        revenue_account_code: '',
         is_active: true,
         updated_at: '',
     });
@@ -220,77 +217,62 @@ const openCreate = () => {
     form.clearErrors();
     dialogOpen.value = true;
 };
-
-const openEdit = (unit: UnitOfMeasure) => {
-    editingUnit.value = unit;
+const openEdit = (group: ItemGroup) => {
+    editingGroup.value = group;
     form.defaults({
-        code: unit.code,
-        name: unit.name,
-        base_code: unit.base_code,
-        factor: unit.factor,
-        is_active: unit.is_active,
-        updated_at: unit.updated_at,
+        code: group.code,
+        name: group.name,
+        parent_id: group.parent_id ? String(group.parent_id) : '',
+        inventory_account_code: group.inventory_account_code ?? '',
+        revenue_account_code: group.revenue_account_code ?? '',
+        is_active: group.is_active,
+        updated_at: group.updated_at,
     });
     form.reset();
     form.clearErrors();
     dialogOpen.value = true;
 };
-
-const openView = (unit: UnitOfMeasure) => {
-    viewingUnit.value = unit;
-};
-
 const submit = () => {
     const options = {
         preserveScroll: true,
         onSuccess: () => (dialogOpen.value = false),
     };
 
-    if (editingUnit.value) {
-        form.patch(`/master-data/uom/${editingUnit.value.id}`, options);
+    if (editingGroup.value) {
+        form.patch(
+            `/master-data/item-groups/${editingGroup.value.id}`,
+            options,
+        );
 
         return;
     }
 
-    form.post('/master-data/uom', options);
+    form.post('/master-data/item-groups', options);
 };
-
-const toggleUnit = (unit: UnitOfMeasure) => {
+const toggleGroup = (group: ItemGroup) =>
     router.patch(
-        `/master-data/uom/${unit.id}/toggle`,
-        { updated_at: unit.updated_at },
+        `/master-data/item-groups/${group.id}/toggle`,
+        { updated_at: group.updated_at },
         { preserveScroll: true },
     );
-};
-
-const deleteUnit = (unit: UnitOfMeasure) => {
-    deletingUnit.value = unit;
-    deleteError.value = '';
-};
-
 const confirmDelete = () => {
-    if (!deletingUnit.value) {
+    if (!deletingGroup.value) {
         return;
     }
 
-    deleteProcessing.value = true;
-    deleteError.value = '';
-
-    router.delete(`/master-data/uom/${deletingUnit.value.id}`, {
-        data: { updated_at: deletingUnit.value.updated_at },
+    router.delete(`/master-data/item-groups/${deletingGroup.value.id}`, {
+        data: { updated_at: deletingGroup.value.updated_at },
         preserveScroll: true,
-        onSuccess: () => (deletingUnit.value = null),
+        onStart: () => (deleteProcessing.value = true),
+        onSuccess: () => (deletingGroup.value = null),
         onError: (errors) => {
             deleteError.value =
-                String(errors.unit_of_measure ?? '') ||
-                'Satuan gagal dihapus. Muat ulang lalu coba lagi.';
+                String(errors.item_group ?? '') ||
+                'Kelompok item gagal dihapus. Muat ulang lalu coba lagi.';
         },
         onFinish: () => (deleteProcessing.value = false),
     });
 };
-
-const formatFactor = (factor: string) =>
-    Number(factor).toLocaleString('id-ID', { maximumFractionDigits: 6 });
 
 watch(search, (value) => {
     if (skipNextSearchWatch) {
@@ -306,32 +288,31 @@ defineOptions({
     layout: {
         breadcrumbs: [
             { title: 'Dashboard', href: '/dashboard' },
-            { title: 'Satuan (UOM)', href: '/master-data/uom' },
+            { title: 'Kelompok Item', href: '/master-data/item-groups' },
         ],
     },
 });
 </script>
 
 <template>
-    <Head title="Satuan (UOM)" />
-
+    <Head title="Kelompok Item" />
     <div class="space-y-6 p-4">
         <AdminPageHeader
             eyebrow="Master Data"
-            title="Satuan (UOM)"
-            description="Atur satuan yang digunakan untuk barang, pembelian, dan pencatatan stok."
+            title="Kelompok Item"
+            description="Atur pengelompokan barang agar pencatatan stok, penjualan, dan laporan lebih rapi."
         >
             <template #actions>
                 <Button v-if="canCreate" @click="openCreate">
                     <Plus class="size-4" />
-                    Tambah Satuan
+                    Tambah Kelompok
                 </Button>
             </template>
         </AdminPageHeader>
 
         <DataTableCard
-            title="Daftar Satuan"
-            description="Satuan yang sudah dipakai item tetap tersimpan dan tidak dapat dihapus."
+            title="Daftar Kelompok Item"
+            description="Kelompok yang masih digunakan oleh barang tidak dapat dihapus."
         >
             <template #filters>
                 <DataTableFilterSelect
@@ -346,13 +327,13 @@ defineOptions({
                 <DataTableSearch
                     v-model="search"
                     class="w-full sm:max-w-sm"
-                    placeholder="Cari kode, nama, atau satuan dasar"
-                    label="Cari satuan"
+                    placeholder="Cari kode atau nama kelompok"
+                    label="Cari kelompok item"
                     @clear="clearSearch"
                 />
                 <DataTableFilterSelect
                     v-model="filterStatus"
-                    label="Filter status satuan"
+                    label="Filter status kelompok"
                     @change="applyFilters({ status: $event })"
                 >
                     <option value="semua">Semua status</option>
@@ -378,79 +359,70 @@ defineOptions({
             >
                 <tr>
                     <th class="px-4 py-3.5">Kode</th>
-                    <th class="px-4 py-3.5">Nama Satuan</th>
-                    <th class="px-4 py-3.5">Satuan Dasar</th>
-                    <th class="px-4 py-3.5 text-right">Faktor</th>
-                    <th class="px-4 py-3.5 text-center">Dipakai Item</th>
+                    <th class="px-4 py-3.5">Nama Kelompok</th>
+                    <th class="px-4 py-3.5">Induk</th>
+                    <th class="px-4 py-3.5 text-center">Barang</th>
                     <th class="px-4 py-3.5">Status</th>
                     <th class="px-4 py-3.5 text-right">Aksi</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-border/70">
                 <tr
-                    v-for="unit in units.data"
-                    :key="unit.id"
+                    v-for="group in groups.data"
+                    :key="group.id"
                     class="transition-colors duration-200 hover:bg-emerald-50/60 dark:hover:bg-emerald-950/20"
                 >
                     <td class="px-4 py-3 font-medium">
                         <span
                             class="inline-flex rounded-md bg-primary/10 px-2.5 py-1 font-mono text-xs text-primary"
                         >
-                            {{ unit.code }}
+                            {{ group.code }}
                         </span>
                     </td>
                     <td class="px-4 py-3">
-                        <div class="font-medium text-foreground">
-                            {{ unit.name }}
-                        </div>
+                        <div class="font-medium">{{ group.name }}</div>
                         <div class="text-xs text-muted-foreground">
-                            Diperbarui {{ formatDate(unit.updated_at) }}
+                            Diperbarui {{ formatDate(group.updated_at) }}
                         </div>
                     </td>
                     <td class="px-4 py-3 text-muted-foreground">
-                        {{ unit.base_code }}
-                    </td>
-                    <td class="px-4 py-3 text-right font-mono text-xs">
-                        {{ formatFactor(unit.factor) }}
+                        {{ group.parent ? group.parent.name : '—' }}
                     </td>
                     <td class="px-4 py-3 text-center">
-                        <Badge variant="outline" class="rounded-md">
-                            {{ unit.items_count }} item
-                        </Badge>
+                        <Badge variant="outline" class="rounded-md"
+                            >{{ group.items_count }} barang</Badge
+                        >
                     </td>
                     <td class="px-4 py-3">
                         <Badge
-                            :variant="unit.is_active ? 'default' : 'secondary'"
+                            :variant="group.is_active ? 'default' : 'secondary'"
                             class="rounded-md"
                         >
-                            {{ unit.is_active ? 'Aktif' : 'Nonaktif' }}
+                            {{ group.is_active ? 'Aktif' : 'Nonaktif' }}
                         </Badge>
                     </td>
                     <td class="px-4 py-3 text-right">
                         <div class="flex justify-end">
                             <RowActionMenu>
-                                <DropdownMenuItem @select="openView(unit)">
-                                    <Eye class="size-4" />
-                                    Lihat
+                                <DropdownMenuItem
+                                    @select="viewingGroup = group"
+                                >
+                                    <Eye /> Lihat
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     v-if="canUpdate"
-                                    @select="openEdit(unit)"
+                                    @select="openEdit(group)"
                                 >
-                                    <Pencil class="size-4" />
-                                    Edit
+                                    <Pencil /> Edit
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     v-if="canUpdate"
-                                    @select="toggleUnit(unit)"
+                                    @select="toggleGroup(group)"
                                 >
-                                    <PowerOff
-                                        v-if="unit.is_active"
-                                        class="size-4"
-                                    />
-                                    <Power v-else class="size-4" />
+                                    <PowerOff v-if="group.is_active" />
+                                    <Power v-else />
                                     {{
-                                        unit.is_active
+                                        group.is_active
                                             ? 'Nonaktifkan'
                                             : 'Aktifkan'
                                     }}
@@ -459,55 +431,64 @@ defineOptions({
                                 <DropdownMenuItem
                                     v-if="canUpdate"
                                     variant="destructive"
-                                    @select="deleteUnit(unit)"
+                                    @select="deletingGroup = group"
                                 >
-                                    <Trash2 class="size-4" />
-                                    Hapus
+                                    <Trash2 /> Hapus
                                 </DropdownMenuItem>
                             </RowActionMenu>
                         </div>
                     </td>
                 </tr>
-                <tr v-if="units.data.length === 0">
+                <tr v-if="groups.data.length === 0">
                     <td
-                        colspan="7"
+                        colspan="6"
                         class="px-4 py-12 text-center text-muted-foreground"
                     >
-                        Data satuan tidak ditemukan.
+                        Kelompok item tidak ditemukan.
                     </td>
                 </tr>
             </tbody>
-
             <template #footer>
                 <DataTablePagination
-                    :from="units.from"
-                    :to="units.to"
-                    :total="units.total"
-                    :links="units.links"
+                    :from="groups.from"
+                    :to="groups.to"
+                    :total="groups.total"
+                    :links="groups.links"
                 />
             </template>
         </DataTableCard>
 
         <AdminDataDialog
             v-model:open="viewDialogOpen"
-            title="Detail Satuan"
-            description="Informasi lengkap satuan yang dipilih."
+            title="Detail Kelompok Item"
+            description="Informasi lengkap kelompok yang dipilih."
+            size="wide"
         >
-            <dl v-if="viewingUnit" class="grid gap-3 sm:grid-cols-2">
+            <dl v-if="viewingGroup" class="grid gap-3 sm:grid-cols-2">
                 <div
                     v-for="[label, value] in [
-                        ['Kode', viewingUnit.code],
-                        ['Nama', viewingUnit.name],
-                        ['Satuan Dasar', viewingUnit.base_code],
-                        ['Faktor', formatFactor(viewingUnit.factor)],
-                        ['Digunakan oleh', `${viewingUnit.items_count} barang`],
+                        ['Kode', viewingGroup.code],
+                        ['Nama', viewingGroup.name],
+                        [
+                            'Kelompok Induk',
+                            viewingGroup.parent?.name ?? 'Tidak ada',
+                        ],
+                        ['Jumlah Barang', `${viewingGroup.items_count} barang`],
+                        [
+                            'Akun Persediaan',
+                            accountLabel(viewingGroup.inventory_account_code),
+                        ],
+                        [
+                            'Akun Pendapatan',
+                            accountLabel(viewingGroup.revenue_account_code),
+                        ],
                         [
                             'Status',
-                            viewingUnit.is_active ? 'Aktif' : 'Nonaktif',
+                            viewingGroup.is_active ? 'Aktif' : 'Nonaktif',
                         ],
                         [
                             'Terakhir Diperbarui',
-                            formatDate(viewingUnit.updated_at),
+                            formatDate(viewingGroup.updated_at),
                         ],
                     ]"
                     :key="label"
@@ -530,17 +511,24 @@ defineOptions({
 
         <AdminDataDialog
             v-model:open="dialogOpen"
-            :title="editingUnit ? 'Edit Satuan' : 'Tambah Satuan'"
-            description="Tentukan kode, satuan dasar, dan nilai perbandingan yang digunakan pada barang."
+            :title="
+                editingGroup ? 'Edit Kelompok Item' : 'Tambah Kelompok Item'
+            "
+            description="Lengkapi pengelompokan barang dan akun yang digunakan dalam pencatatan."
+            size="wide"
         >
-            <form id="unit-form" class="space-y-5" @submit.prevent="submit">
+            <form
+                id="item-group-form"
+                class="space-y-5"
+                @submit.prevent="submit"
+            >
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div class="grid gap-2">
                         <Label for="code">Kode</Label>
                         <Input
                             id="code"
                             v-model="form.code"
-                            placeholder="KG"
+                            placeholder="RAW-MEAT"
                             autocomplete="off"
                         />
                         <p
@@ -551,56 +539,96 @@ defineOptions({
                         </p>
                     </div>
                     <div class="grid gap-2">
-                        <Label for="base_code">Satuan Dasar</Label>
+                        <Label for="name">Nama Kelompok</Label>
                         <Input
-                            id="base_code"
-                            v-model="form.base_code"
-                            placeholder="KG"
+                            id="name"
+                            v-model="form.name"
+                            placeholder="Daging"
                             autocomplete="off"
                         />
                         <p
-                            v-if="form.errors.base_code"
+                            v-if="form.errors.name"
                             class="text-sm text-destructive"
                         >
-                            {{ form.errors.base_code }}
+                            {{ form.errors.name }}
                         </p>
                     </div>
                 </div>
-
                 <div class="grid gap-2">
-                    <Label for="name">Nama Satuan</Label>
-                    <Input
-                        id="name"
-                        v-model="form.name"
-                        placeholder="Kilogram"
-                        autocomplete="off"
-                    />
-                    <p v-if="form.errors.name" class="text-sm text-destructive">
-                        {{ form.errors.name }}
-                    </p>
-                </div>
-
-                <div class="grid gap-2">
-                    <Label for="factor">Faktor Konversi</Label>
-                    <Input
-                        id="factor"
-                        v-model="form.factor"
-                        inputmode="decimal"
-                        placeholder="1.000000"
-                        autocomplete="off"
-                    />
-                    <p class="text-xs text-muted-foreground">
-                        Gunakan titik sebagai pemisah desimal, maksimal 6 angka
-                        di belakang koma.
-                    </p>
+                    <Label for="parent_id">Kelompok Induk</Label>
+                    <select
+                        id="parent_id"
+                        v-model="form.parent_id"
+                        class="h-10 rounded-md border bg-background px-3 text-sm"
+                    >
+                        <option value="">Tidak ada</option>
+                        <option
+                            v-for="option in availableParents"
+                            :key="option.id"
+                            :value="String(option.id)"
+                        >
+                            {{ option.code }} — {{ option.name }}
+                        </option>
+                    </select>
                     <p
-                        v-if="form.errors.factor"
+                        v-if="form.errors.parent_id"
                         class="text-sm text-destructive"
                     >
-                        {{ form.errors.factor }}
+                        {{ form.errors.parent_id }}
                     </p>
                 </div>
-
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div class="grid gap-2">
+                        <Label for="inventory_account_code"
+                            >Akun Persediaan</Label
+                        >
+                        <select
+                            id="inventory_account_code"
+                            v-model="form.inventory_account_code"
+                            class="h-10 rounded-md border bg-background px-3 text-sm"
+                        >
+                            <option value="">Belum ditentukan</option>
+                            <option
+                                v-for="option in accountOptions"
+                                :key="option.code"
+                                :value="option.code"
+                            >
+                                {{ option.code }} — {{ option.name }}
+                            </option>
+                        </select>
+                        <p
+                            v-if="form.errors.inventory_account_code"
+                            class="text-sm text-destructive"
+                        >
+                            {{ form.errors.inventory_account_code }}
+                        </p>
+                    </div>
+                    <div class="grid gap-2">
+                        <Label for="revenue_account_code"
+                            >Akun Pendapatan</Label
+                        >
+                        <select
+                            id="revenue_account_code"
+                            v-model="form.revenue_account_code"
+                            class="h-10 rounded-md border bg-background px-3 text-sm"
+                        >
+                            <option value="">Belum ditentukan</option>
+                            <option
+                                v-for="option in accountOptions"
+                                :key="option.code"
+                                :value="option.code"
+                            >
+                                {{ option.code }} — {{ option.name }}
+                            </option>
+                        </select>
+                        <p
+                            v-if="form.errors.revenue_account_code"
+                            class="text-sm text-destructive"
+                        >
+                            {{ form.errors.revenue_account_code }}
+                        </p>
+                    </div>
+                </div>
                 <label class="flex items-center gap-2 text-sm">
                     <input
                         v-model="form.is_active"
@@ -616,30 +644,30 @@ defineOptions({
                     variant="outline"
                     @click="dialogOpen = false"
                 >
-                    <X class="size-4" /> Batal
+                    <X /> Batal
                 </Button>
                 <Button
                     type="submit"
-                    form="unit-form"
+                    form="item-group-form"
                     :disabled="form.processing"
                 >
-                    <Save class="size-4" /> Simpan
+                    <Save /> Simpan
                 </Button>
             </template>
         </AdminDataDialog>
 
         <ConfirmDeleteDialog
             v-model:open="deleteDialogOpen"
-            title="Hapus Satuan"
-            description="Satuan akan dihapus dari daftar master data."
+            title="Hapus Kelompok Item"
+            description="Kelompok tidak akan muncul lagi dalam daftar."
             :subject="
-                deletingUnit
-                    ? `${deletingUnit.code} — ${deletingUnit.name}`
+                deletingGroup
+                    ? `${deletingGroup.code} — ${deletingGroup.name}`
                     : ''
             "
             :note="
                 deleteError ||
-                'Satuan tidak dapat dihapus jika masih digunakan oleh barang.'
+                'Kelompok tidak dapat dihapus jika masih digunakan oleh barang.'
             "
             :processing="deleteProcessing"
             @confirm="confirmDelete"
