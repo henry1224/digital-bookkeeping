@@ -83,6 +83,7 @@
 10. Pilihan jumlah data `10`, `25`, `50` ditempatkan paling kiri pada baris filter.
 11. Aksi tabel memakai satu `RowActionMenu`: **Lihat**, **Edit**, status, lalu **Hapus** paling bawah setelah pemisah.
 12. Aksi **Lihat** selalu tersedia. Aksi tambah, edit, status, dan hapus hanya tampil jika pengguna memiliki izin terkait.
+13. Data berinduk memakai tampilan tree: indentasi per tingkat, tombol buka/tutup pada induk, serta kontrol **Buka Semua** dan **Tutup Semua** di paling kiri baris filter.
 
 ## AdminDataDialog
 

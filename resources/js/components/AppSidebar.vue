@@ -85,8 +85,8 @@ const sidebarNavGroups: SidebarNavGroup[] = [
             },
             {
                 title: 'Chart of Accounts',
+                href: '/master-data/accounts',
                 icon: BookOpenText,
-                badge: 'Segera',
             },
             {
                 title: 'Item',
