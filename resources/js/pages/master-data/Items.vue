@@ -14,6 +14,7 @@ import {
 import { computed, ref, watch } from 'vue';
 import AdminDataDialog from '@/components/admin/AdminDataDialog.vue';
 import AdminPageHeader from '@/components/admin/AdminPageHeader.vue';
+import AdminSearchSelect from '@/components/admin/AdminSearchSelect.vue';
 import DataTableCard from '@/components/admin/DataTableCard.vue';
 import DataTableFilterSelect from '@/components/admin/DataTableFilterSelect.vue';
 import DataTablePagination from '@/components/admin/DataTablePagination.vue';
@@ -105,6 +106,18 @@ const form = useForm({
 });
 const typeLabel = (type: ItemType) =>
     typeOptions.find((option) => option.value === type)?.label ?? type;
+const itemGroupOptions = computed(() =>
+    props.itemGroups.map((option) => ({
+        value: String(option.id),
+        label: `${option.code} — ${option.name}`,
+    })),
+);
+const uomOptions = computed(() =>
+    props.unitOfMeasures.map((option) => ({
+        value: String(option.id),
+        label: `${option.code} — ${option.name}`,
+    })),
+);
 const money = (value: string) =>
     new Intl.NumberFormat('id-ID', {
         style: 'currency',
@@ -123,16 +136,16 @@ const viewDialogOpen = computed({
     get: () => viewingItem.value !== null,
     set: (open) => {
         if (!open) {
-viewingItem.value = null;
-}
+            viewingItem.value = null;
+        }
     },
 });
 const deleteDialogOpen = computed({
     get: () => deletingItem.value !== null,
     set: (open) => {
         if (!open) {
-deletingItem.value = null;
-}
+            deletingItem.value = null;
+        }
     },
 });
 const activeFilters = (overrides: Partial<Filters> = {}) =>
@@ -165,8 +178,8 @@ const visitFilters = (overrides: Partial<Filters> = {}) => {
         },
         onFinish: () => {
             if (cancelToken === visitToken) {
-cancelToken = null;
-}
+                cancelToken = null;
+            }
         },
     });
 };
@@ -182,27 +195,27 @@ const applyFilters = (overrides: Partial<Filters> = {}, immediate = false) => {
     }
 
     if ('status' in overrides) {
-filterStatus.value = overrides.status ?? 'semua';
-}
+        filterStatus.value = overrides.status ?? 'semua';
+    }
 
     if ('type' in overrides) {
-filterType.value = overrides.type ?? 'semua';
-}
+        filterType.value = overrides.type ?? 'semua';
+    }
 
     if ('group' in overrides) {
-filterGroup.value = overrides.group ?? 'semua';
-}
+        filterGroup.value = overrides.group ?? 'semua';
+    }
 
     if ('per_page' in overrides) {
-perPage.value = overrides.per_page ?? '10';
-}
+        perPage.value = overrides.per_page ?? '10';
+    }
 
     if (immediate) {
         requestFilters.cancel();
         visitFilters(overrides);
     } else {
-requestFilters(overrides);
-}
+        requestFilters(overrides);
+    }
 };
 const clearSearch = () => {
     searchFilters.cancel();
@@ -256,10 +269,10 @@ const submit = () => {
     };
 
     if (editingItem.value) {
-form.patch(`/master-data/items/${editingItem.value.id}`, options);
-} else {
-form.post('/master-data/items', options);
-}
+        form.patch(`/master-data/items/${editingItem.value.id}`, options);
+    } else {
+        form.post('/master-data/items', options);
+    }
 };
 const toggleItem = (item: Item) =>
     router.patch(
@@ -269,8 +282,8 @@ const toggleItem = (item: Item) =>
     );
 const confirmDelete = () => {
     if (!deletingItem.value) {
-return;
-}
+        return;
+    }
 
     deleteProcessing.value = true;
     router.delete(`/master-data/items/${deletingItem.value.id}`, {
@@ -614,20 +627,11 @@ defineOptions({
                     </div>
                     <div class="grid gap-2">
                         <Label for="item_group_id">Kelompok Item</Label
-                        ><select
-                            id="item_group_id"
+                        ><AdminSearchSelect
                             v-model="form.item_group_id"
-                            class="h-10 rounded-md border border-input bg-background px-3 text-sm"
-                        >
-                            <option value="" disabled>Pilih kelompok</option>
-                            <option
-                                v-for="group in itemGroups"
-                                :key="group.id"
-                                :value="String(group.id)"
-                            >
-                                {{ group.code }} — {{ group.name }}
-                            </option>
-                        </select>
+                            :options="itemGroupOptions"
+                            placeholder="Cari kelompok item"
+                        />
                         <p
                             v-if="form.errors.item_group_id"
                             class="text-sm text-destructive"
@@ -637,20 +641,11 @@ defineOptions({
                     </div>
                     <div class="grid gap-2">
                         <Label for="base_uom_id">Satuan Dasar</Label
-                        ><select
-                            id="base_uom_id"
+                        ><AdminSearchSelect
                             v-model="form.base_uom_id"
-                            class="h-10 rounded-md border border-input bg-background px-3 text-sm"
-                        >
-                            <option value="" disabled>Pilih satuan</option>
-                            <option
-                                v-for="uom in unitOfMeasures"
-                                :key="uom.id"
-                                :value="String(uom.id)"
-                            >
-                                {{ uom.code }} — {{ uom.name }}
-                            </option>
-                        </select>
+                            :options="uomOptions"
+                            placeholder="Cari satuan dasar"
+                        />
                         <p
                             v-if="form.errors.base_uom_id"
                             class="text-sm text-destructive"

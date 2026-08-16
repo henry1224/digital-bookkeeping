@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\MasterData\AccountController;
+use App\Http\Controllers\MasterData\BankAccountController;
 use App\Http\Controllers\MasterData\ItemController;
 use App\Http\Controllers\MasterData\ItemGroupController;
 use App\Http\Controllers\MasterData\OutletController;
@@ -63,6 +64,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('master-data/items/{item}', [ItemController::class, 'update'])->name('master-data.items.update');
     Route::patch('master-data/items/{item}/toggle', [ItemController::class, 'toggle'])->name('master-data.items.toggle');
     Route::delete('master-data/items/{item}', [ItemController::class, 'destroy'])->name('master-data.items.destroy');
+
+    Route::get('master-data/bank-accounts', [BankAccountController::class, 'index'])->middleware('can:master-data.view')->name('master-data.bank-accounts.index');
+    Route::post('master-data/bank-accounts', [BankAccountController::class, 'store'])->name('master-data.bank-accounts.store');
+    Route::patch('master-data/bank-accounts/{bankAccount}', [BankAccountController::class, 'update'])->name('master-data.bank-accounts.update');
+    Route::patch('master-data/bank-accounts/{bankAccount}/toggle', [BankAccountController::class, 'toggle'])->name('master-data.bank-accounts.toggle');
+    Route::delete('master-data/bank-accounts/{bankAccount}', [BankAccountController::class, 'destroy'])->name('master-data.bank-accounts.destroy');
 });
 
 require __DIR__.'/settings.php';

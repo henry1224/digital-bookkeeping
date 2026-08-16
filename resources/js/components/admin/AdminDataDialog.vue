@@ -33,7 +33,7 @@ const dialogOpen = computed({
 <template>
     <Dialog v-model:open="dialogOpen">
         <DialogContent
-            class="max-h-[90vh] gap-0 overflow-hidden border-border/80 p-0 shadow-2xl"
+            class="max-h-[90vh] gap-0 overflow-visible border-border/80 p-0 shadow-2xl"
             :class="size === 'wide' ? 'sm:max-w-2xl' : 'sm:max-w-lg'"
         >
             <DialogHeader
