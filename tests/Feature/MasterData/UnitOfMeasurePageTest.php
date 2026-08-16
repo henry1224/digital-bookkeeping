@@ -160,7 +160,13 @@ class UnitOfMeasurePageTest extends TestCase
     {
         $this->actingAs($this->owner());
 
-        $unit = UnitOfMeasure::where('code', 'PORSI')->firstOrFail();
+        $unit = UnitOfMeasure::create([
+            'code' => 'UNUSED',
+            'name' => 'Satuan Kosong',
+            'base_code' => 'UNUSED',
+            'factor' => '1.000000',
+            'is_active' => true,
+        ]);
 
         $this->delete(route('master-data.uom.destroy', $unit), [
             'updated_at' => $unit->updated_at?->toJSON(),

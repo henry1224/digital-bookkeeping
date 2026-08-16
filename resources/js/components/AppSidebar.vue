@@ -90,8 +90,8 @@ const sidebarNavGroups: SidebarNavGroup[] = [
             },
             {
                 title: 'Item',
+                href: '/master-data/items',
                 icon: Package,
-                badge: 'Segera',
             },
             {
                 title: 'Rekening Bank',

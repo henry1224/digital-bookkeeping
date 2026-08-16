@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\MasterData\AccountController;
+use App\Http\Controllers\MasterData\ItemController;
 use App\Http\Controllers\MasterData\ItemGroupController;
 use App\Http\Controllers\MasterData\OutletController;
 use App\Http\Controllers\MasterData\SupplierController;
@@ -54,6 +55,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('master-data/accounts/{account}', [AccountController::class, 'update'])->name('master-data.accounts.update');
     Route::patch('master-data/accounts/{account}/toggle', [AccountController::class, 'toggle'])->name('master-data.accounts.toggle');
     Route::delete('master-data/accounts/{account}', [AccountController::class, 'destroy'])->name('master-data.accounts.destroy');
+
+    Route::get('master-data/items', [ItemController::class, 'index'])
+        ->middleware('can:master-data.view')
+        ->name('master-data.items.index');
+    Route::post('master-data/items', [ItemController::class, 'store'])->name('master-data.items.store');
+    Route::patch('master-data/items/{item}', [ItemController::class, 'update'])->name('master-data.items.update');
+    Route::patch('master-data/items/{item}/toggle', [ItemController::class, 'toggle'])->name('master-data.items.toggle');
+    Route::delete('master-data/items/{item}', [ItemController::class, 'destroy'])->name('master-data.items.destroy');
 });
 
 require __DIR__.'/settings.php';
