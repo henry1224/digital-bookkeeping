@@ -131,7 +131,7 @@ Gunakan checklist ini setiap modul baru.
 |---|---|---|
 | Outlets | DONE | Schema/model/seeder + UI list, filter, create, update, toggle aktif, soft delete, dan audit log. |
 | Outlet configs | DONE | PB1 baseline. UI belum. |
-| Accounts/COA | DONE | Schema/model/seeder. UI belum. |
+| Accounts/COA | DONE | Schema/model/seeder + UI list, filter, create, view, update, toggle, soft delete, structure guard, concurrency guard, audit log, dan feature test. |
 | Item groups | DONE | Schema/model/seeder + UI list, filter, create, view, update, toggle, soft delete, concurrency guard, audit log, dan feature test. |
 | UOM | DONE | Schema/model/seeder + UI list, filter, create, update, toggle, soft delete, optimistic locking, audit log, dan feature test (`d84d92b`). |
 | Items | DONE | Schema/model. Seeder item transaksi belum. UI belum. |
