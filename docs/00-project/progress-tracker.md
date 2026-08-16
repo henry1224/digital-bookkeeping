@@ -17,10 +17,10 @@ Dokumen ini menjadi papan status resmi proyek Digital Bookkeeping. Update setiap
 | Item | Nilai |
 |---|---|
 | Baseline resmi | `main` |
-| Status tersinkron sampai | `829e24b merge: style outlet delete action` |
+| Status tersinkron sampai | `d84d92b feat: tambah CRUD satuan end-to-end` |
 | Base branch standar | `main` |
 | Remote | `origin = https://github.com/henry1224/digital-bookkeeping.git` |
-| Validasi terakhir | Format, TypeScript, Outlet feature test (9 tests, 45 assertions), dan build hijau |
+| Validasi terakhir | Pint, TypeScript, build, dan 67 tests (243 assertions) hijau |
 | Terakhir disinkronkan | 16 Agustus 2026 |
 | Bahasa UI | Bahasa Indonesia untuk semua client-facing copy |
 
@@ -41,7 +41,7 @@ Dokumen ini menjadi papan status resmi proyek Digital Bookkeeping. Update setiap
 | RBAC | DONE | Roles, permissions, matrix, middleware/policy | `906ea35` | Sudah merge ke `main`. |
 | Outlet scoping | DONE | User-outlet access, policy/scope query | `809ec43` | Sudah merge ke `main`. |
 | File upload dasar | TODO | Storage config, upload validation, audit | - | Masuk foundation lanjutan bila modul dokumen butuh. |
-| Master Data UI | IN_PROGRESS | CRUD outlets, accounts, items, suppliers, bank accounts | `829e24b` | Outlet list/create/update/toggle/soft delete selesai; CRUD master data lain belum. |
+| Master Data UI | IN_PROGRESS | CRUD outlets, UOM, accounts, items, suppliers, bank accounts | `d84d92b` | Outlet dan UOM selesai; CRUD master data lain belum. |
 | Standar Admin UI | DONE | Page header, table filter, pagination, row action, confirm delete | `829e24b` | Komponen reusable dan design system sudah merge ke `main`. |
 | Daily Sales | TODO | Input/import ringkasan penjualan harian + journal | - | Kandidat modul transaksi pertama. |
 | Bank Book | TODO | Bank transactions, running balance, manual bank entry | - | Depend ke bank_accounts + journal. |
@@ -133,7 +133,7 @@ Gunakan checklist ini setiap modul baru.
 | Outlet configs | DONE | PB1 baseline. UI belum. |
 | Accounts/COA | DONE | Schema/model/seeder. UI belum. |
 | Item groups | DONE | Schema/model/seeder. UI belum. |
-| UOM | DONE | Schema/model/seeder. UI belum. |
+| UOM | DONE | Schema/model/seeder + UI list, filter, create, update, toggle, soft delete, optimistic locking, audit log, dan feature test (`d84d92b`). |
 | Items | DONE | Schema/model. Seeder item transaksi belum. UI belum. |
 | Suppliers | DONE | Schema/model. UI belum. |
 | Bank accounts | DONE | Schema/model. UI belum. |
