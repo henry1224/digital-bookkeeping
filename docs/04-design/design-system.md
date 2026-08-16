@@ -40,6 +40,7 @@ Vue sebelum dipakai; kalau belum ada, cukup ikuti aturan di dokumen ini.
 4. Destructive action butuh confirmation dan audit reason.
 5. UI harus optimal untuk desktop terlebih dahulu.
 6. Form keuangan harus mencegah input ambigu, terutama uang, tanggal, outlet, dan akun.
+7. Tanggal pada tampilan memakai format `dd/mm/yyyy` melalui `resources/js/lib/date.ts`; format data server tidak diubah.
 
 ## Arah Visual Admin
 
@@ -81,7 +82,7 @@ Tone visual: **financial calm** — bersih, tenang, profesional, dan mudah dibac
 ### List Page
 
 1. Pola wajib: Page Header → Table Header Filter Bar → Table → Pagination Footer.
-2. Admin list wajib pakai `AdminPageHeader`, `DataTableCard`, `DataTableSearch`, `DataTableFilterSelect`, `DataTablePagination`, dan `RowActionButton`.
+2. Admin list wajib pakai `AdminPageHeader`, `DataTableCard`, `DataTableSearch`, `DataTableFilterSelect`, `DataTablePagination`, dan `RowActionMenu`.
 3. Search/filter/status ditempatkan di header table card, bukan breadcrumb atau page header.
 4. Action utama tetap di page header kanan; action filter/reset tetap di table header.
 5. Search table wajib debounce `400ms`; request filter wajib debounce pendek `150ms` dan membatalkan request lama bila ada.
@@ -99,6 +100,7 @@ Tone visual: **financial calm** — bersih, tenang, profesional, dan mudah dibac
 5. Save/post/approve/reject/close wajib punya loading state dan disable saat processing.
 6. Delete wajib pakai `ConfirmDeleteDialog`, bukan `window.confirm`.
 7. Delete modal memakai header rose soft, body peringatan singkat, cancel outline, confirm destructive.
+8. Judul, penjelasan, bantuan, konfirmasi, dan pesan gagal memakai bahasa pengguna; istilah teknis internal tidak boleh tampil.
 
 ### Motion & Responsiveness
 
@@ -162,8 +164,8 @@ States: default, hover, focus, active, disabled, loading.
 
 1. Primary action memakai `primary` dan icon di kiri jika action menambah/menyimpan/memproses data.
 2. Secondary action memakai `outline` atau `secondary`, bukan primary kedua dalam satu area.
-3. Row action table wajib pakai `RowActionButton` ukuran `36px` (`h-9 w-9`) dengan `title`, `aria-label`, dan teks `sr-only`.
-4. Variant row action mengikuti eproc: `edit` = primary tint, `warning` = nonaktifkan/hold, `success` = aktifkan/approve, `danger` = hapus/tolak.
+3. Aksi baris tabel wajib memakai satu `RowActionMenu` ukuran `36px` dengan `title` dan `aria-label`.
+4. Urutan menu: lihat, edit, ubah status, pemisah, lalu hapus berwarna merah.
 5. Reset/filter clear boleh icon-only `ghost` jika berada di filter bar.
 6. Primary page action tetap boleh icon + label eksplisit: `Tambah Outlet`, `Simpan`, `Proses`.
 

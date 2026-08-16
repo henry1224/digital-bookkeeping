@@ -25,9 +25,9 @@ const props = withDefaults(
     {
         title: 'Hapus Data',
         description:
-            'Data akan dihapus dari daftar, tapi histori tetap tersimpan.',
+            'Data tidak akan muncul lagi dalam daftar, tetapi riwayatnya tetap tersimpan.',
         subject: '',
-        note: 'Aksi ini memakai soft delete dan tercatat di audit log.',
+        note: 'Perubahan ini akan dicatat agar riwayat data tetap dapat diperiksa.',
         processing: false,
         confirmLabel: 'Hapus',
         cancelLabel: 'Batal',

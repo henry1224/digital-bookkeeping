@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { Head, router, useForm } from '@inertiajs/vue3';
+import { Head, router, useForm, usePage } from '@inertiajs/vue3';
 import {
+    Eye,
     Pencil,
     Plus,
     Power,
@@ -16,10 +17,10 @@ import DataTableCard from '@/components/admin/DataTableCard.vue';
 import DataTableFilterSelect from '@/components/admin/DataTableFilterSelect.vue';
 import DataTablePagination from '@/components/admin/DataTablePagination.vue';
 import DataTableSearch from '@/components/admin/DataTableSearch.vue';
-import RowActionButton from '@/components/admin/RowActionButton.vue';
+import RowActionMenu from '@/components/admin/RowActionMenu.vue';
+import ConfirmDeleteDialog from '@/components/ConfirmDeleteDialog.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import ConfirmDeleteDialog from '@/components/ConfirmDeleteDialog.vue';
 import {
     Dialog,
     DialogContent,
@@ -28,8 +29,13 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import {
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { formatDate } from '@/lib/date';
 import { useDebounceFn } from '@/lib/debounce';
 
 type Outlet = {
@@ -52,6 +58,7 @@ type OutletFilters = {
     search: string;
     status: string;
     type: string;
+    per_page: string;
 };
 
 type CancelToken = {
@@ -69,10 +76,19 @@ const props = defineProps<{
     };
 }>();
 
+const page = usePage();
+const canCreate = computed(() =>
+    page.props.auth.permissions.includes('master-data.create'),
+);
+const canUpdate = computed(() =>
+    page.props.auth.permissions.includes('master-data.update'),
+);
 const search = ref(props.filters.search);
 const filterStatus = ref(props.filters.status ?? 'semua');
 const filterType = ref(props.filters.type ?? 'semua');
+const perPage = ref(props.filters.per_page ?? '10');
 const dialogOpen = ref(false);
+const viewingOutlet = ref<Outlet | null>(null);
 const editingOutlet = ref<Outlet | null>(null);
 const deletingOutlet = ref<Outlet | null>(null);
 const deleteProcessing = ref(false);
@@ -92,12 +108,23 @@ const hasActiveFilters = computed(
     () =>
         search.value !== '' ||
         filterStatus.value !== 'semua' ||
-        filterType.value !== 'semua',
+        filterType.value !== 'semua' ||
+        perPage.value !== '10',
 );
 const deleteDialogOpen = computed({
     get: () => deletingOutlet.value !== null,
     set: (open) => {
-        if (!open) deletingOutlet.value = null;
+        if (!open) {
+            deletingOutlet.value = null;
+        }
+    },
+});
+const viewDialogOpen = computed({
+    get: () => viewingOutlet.value !== null,
+    set: (open) => {
+        if (!open) {
+            viewingOutlet.value = null;
+        }
     },
 });
 
@@ -106,12 +133,15 @@ const activeFilters = (overrides: Partial<OutletFilters> = {}) => {
         search: search.value,
         status: filterStatus.value,
         type: filterType.value,
+        per_page: perPage.value,
         ...overrides,
     };
 
     return Object.fromEntries(
         Object.entries(filters).filter(([key, value]) => {
-            if (key === 'search') return String(value ?? '').trim() !== '';
+            if (key === 'search') {
+                return String(value ?? '').trim() !== '';
+            }
 
             return value !== 'semua';
         }),
@@ -169,6 +199,10 @@ const applyFilters = (
         filterType.value = overrides.type ?? 'semua';
     }
 
+    if (Object.prototype.hasOwnProperty.call(overrides, 'per_page')) {
+        perPage.value = overrides.per_page ?? '10';
+    }
+
     if (immediate) {
         requestFilters.cancel();
         visitFilters(overrides);
@@ -185,7 +219,10 @@ const clearSearch = () => {
 };
 
 const resetFilters = () =>
-    applyFilters({ search: '', status: 'semua', type: 'semua' }, true);
+    applyFilters(
+        { search: '', status: 'semua', type: 'semua', per_page: '10' },
+        true,
+    );
 
 const openCreate = () => {
     editingOutlet.value = null;
@@ -207,6 +244,10 @@ const openEdit = (outlet: Outlet) => {
     form.reset();
     form.clearErrors();
     dialogOpen.value = true;
+};
+
+const openView = (outlet: Outlet) => {
+    viewingOutlet.value = outlet;
 };
 
 const submit = () => {
@@ -237,7 +278,9 @@ const deleteOutlet = (outlet: Outlet) => {
 };
 
 const confirmDeleteOutlet = () => {
-    if (!deletingOutlet.value) return;
+    if (!deletingOutlet.value) {
+        return;
+    }
 
     router.delete(`/master-data/outlets/${deletingOutlet.value.id}`, {
         data: { updated_at: deletingOutlet.value.updated_at },
@@ -275,10 +318,10 @@ defineOptions({
         <AdminPageHeader
             eyebrow="Master Data"
             title="Outlet"
-            description="Kelola cabang operasional, central kitchen, dan dasar scope laporan multi-outlet."
+            description="Atur cabang dan dapur pusat yang digunakan dalam kegiatan operasional dan laporan."
         >
             <template #actions>
-                <Button @click="openCreate">
+                <Button v-if="canCreate" @click="openCreate">
                     <Plus class="size-4" />
                     Tambah Outlet
                 </Button>
@@ -287,9 +330,18 @@ defineOptions({
 
         <DataTableCard
             title="Daftar Outlet"
-            description="Data outlet aktif dan histori outlet nonaktif."
+            description="Lihat outlet yang masih digunakan maupun yang sudah dinonaktifkan."
         >
             <template #filters>
+                <DataTableFilterSelect
+                    v-model="perPage"
+                    label="Jumlah data per halaman"
+                    @change="applyFilters({ per_page: $event }, true)"
+                >
+                    <option value="10">10 data</option>
+                    <option value="25">25 data</option>
+                    <option value="50">50 data</option>
+                </DataTableFilterSelect>
                 <DataTableSearch
                     v-model="search"
                     placeholder="Cari kode atau nama outlet"
@@ -363,7 +415,7 @@ defineOptions({
                             {{ outlet.name }}
                         </div>
                         <div class="text-xs text-muted-foreground">
-                            Diperbarui {{ outlet.updated_at }}
+                            Diperbarui {{ formatDate(outlet.updated_at) }}
                         </div>
                     </td>
                     <td class="px-4 py-3 text-muted-foreground">
@@ -383,38 +435,44 @@ defineOptions({
                         </Badge>
                     </td>
                     <td class="px-4 py-3 text-right">
-                        <div class="flex justify-end gap-2">
-                            <RowActionButton
-                                label="Edit outlet"
-                                intent="edit"
-                                @click="openEdit(outlet)"
-                            >
-                                <Pencil class="size-3.5" />
-                            </RowActionButton>
-                            <RowActionButton
-                                :label="
-                                    outlet.is_active
-                                        ? 'Nonaktifkan outlet'
-                                        : 'Aktifkan outlet'
-                                "
-                                :intent="
-                                    outlet.is_active ? 'warning' : 'success'
-                                "
-                                @click="toggleOutlet(outlet)"
-                            >
-                                <PowerOff
-                                    v-if="outlet.is_active"
-                                    class="size-3.5"
-                                />
-                                <Power v-else class="size-3.5" />
-                            </RowActionButton>
-                            <RowActionButton
-                                label="Hapus outlet"
-                                intent="danger"
-                                @click="deleteOutlet(outlet)"
-                            >
-                                <Trash2 class="size-3.5" />
-                            </RowActionButton>
+                        <div class="flex justify-end">
+                            <RowActionMenu>
+                                <DropdownMenuItem @select="openView(outlet)">
+                                    <Eye class="size-4" />
+                                    Lihat
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    v-if="canUpdate"
+                                    @select="openEdit(outlet)"
+                                >
+                                    <Pencil class="size-4" />
+                                    Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    v-if="canUpdate"
+                                    @select="toggleOutlet(outlet)"
+                                >
+                                    <PowerOff
+                                        v-if="outlet.is_active"
+                                        class="size-4"
+                                    />
+                                    <Power v-else class="size-4" />
+                                    {{
+                                        outlet.is_active
+                                            ? 'Nonaktifkan'
+                                            : 'Aktifkan'
+                                    }}
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator v-if="canUpdate" />
+                                <DropdownMenuItem
+                                    v-if="canUpdate"
+                                    variant="destructive"
+                                    @select="deleteOutlet(outlet)"
+                                >
+                                    <Trash2 class="size-4" />
+                                    Hapus
+                                </DropdownMenuItem>
+                            </RowActionMenu>
                         </div>
                     </td>
                 </tr>
@@ -437,6 +495,58 @@ defineOptions({
                 />
             </template>
         </DataTableCard>
+
+        <Dialog v-model:open="viewDialogOpen">
+            <DialogContent class="sm:max-w-lg">
+                <DialogHeader>
+                    <DialogTitle>Detail Outlet</DialogTitle>
+                    <DialogDescription>
+                        Informasi lengkap outlet yang dipilih.
+                    </DialogDescription>
+                </DialogHeader>
+
+                <dl v-if="viewingOutlet" class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <dt class="text-xs text-muted-foreground">Kode</dt>
+                        <dd class="font-medium">{{ viewingOutlet.code }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs text-muted-foreground">Nama</dt>
+                        <dd class="font-medium">{{ viewingOutlet.name }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs text-muted-foreground">Jenis</dt>
+                        <dd>
+                            {{ outletTypeLabel(viewingOutlet.outlet_type) }}
+                        </dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs text-muted-foreground">
+                            Zona Waktu
+                        </dt>
+                        <dd>{{ viewingOutlet.timezone }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs text-muted-foreground">Status</dt>
+                        <dd>
+                            {{ viewingOutlet.is_active ? 'Aktif' : 'Nonaktif' }}
+                        </dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs text-muted-foreground">
+                            Terakhir Diperbarui
+                        </dt>
+                        <dd>{{ formatDate(viewingOutlet.updated_at) }}</dd>
+                    </div>
+                </dl>
+
+                <DialogFooter>
+                    <Button variant="outline" @click="viewDialogOpen = false">
+                        Tutup
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
 
         <Dialog v-model:open="dialogOpen">
             <DialogContent class="overflow-hidden p-0 sm:max-w-xl">

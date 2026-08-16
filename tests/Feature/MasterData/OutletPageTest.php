@@ -66,7 +66,7 @@ class OutletPageTest extends TestCase
         ]);
 
         $this->actingAs($owner)
-            ->get(route('master-data.outlets.index', ['status' => 'nonaktif', 'type' => 'outlet']))
+            ->get(route('master-data.outlets.index', ['status' => 'nonaktif', 'type' => 'outlet', 'per_page' => 25]))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('master-data/Outlets')
@@ -74,6 +74,8 @@ class OutletPageTest extends TestCase
                 ->where('outlets.data.0.code', 'BPN-X')
                 ->where('filters.status', 'nonaktif')
                 ->where('filters.type', 'outlet')
+                ->where('filters.per_page', '25')
+                ->where('outlets.per_page', 25)
             );
     }
 

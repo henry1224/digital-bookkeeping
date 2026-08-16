@@ -5,6 +5,7 @@ namespace Tests\Feature\MasterData;
 use App\Models\AuditLog;
 use App\Models\Item;
 use App\Models\ItemGroup;
+use App\Models\Permission;
 use App\Models\Role;
 use App\Models\UnitOfMeasure;
 use App\Models\User;
@@ -48,7 +49,7 @@ class UnitOfMeasurePageTest extends TestCase
         UnitOfMeasure::where('code', 'GR')->update(['is_active' => false]);
 
         $this->actingAs($owner)
-            ->get(route('master-data.uom.index', ['search' => 'GR', 'status' => 'nonaktif']))
+            ->get(route('master-data.uom.index', ['search' => 'GR', 'status' => 'nonaktif', 'per_page' => 25]))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('master-data/UnitOfMeasures')
@@ -56,6 +57,26 @@ class UnitOfMeasurePageTest extends TestCase
                 ->where('units.data.0.code', 'GR')
                 ->where('filters.search', 'GR')
                 ->where('filters.status', 'nonaktif')
+                ->where('filters.per_page', '25')
+                ->where('units.per_page', 25)
+            );
+    }
+
+    public function test_view_only_user_receives_only_view_permission(): void
+    {
+        $this->withoutVite();
+        $this->seed(DatabaseSeeder::class);
+
+        $role = Role::where('slug', 'auditor')->firstOrFail();
+        $role->permissions()->sync([Permission::where('slug', 'master-data.view')->valueOrFail('id')]);
+        $user = User::factory()->create();
+        $user->roles()->attach($role);
+
+        $this->actingAs($user)
+            ->get(route('master-data.uom.index'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('auth.permissions', ['master-data.view'])
             );
     }
 
