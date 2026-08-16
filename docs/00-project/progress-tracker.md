@@ -16,11 +16,12 @@ Dokumen ini menjadi papan status resmi proyek Digital Bookkeeping. Update setiap
 
 | Item | Nilai |
 |---|---|
-| Branch aktif | `features/phase-1/accounting-foundation` |
-| Commit terakhir | `f5889ca feat(phase-1): add accounting foundation and Indonesian UI standard` |
+| Baseline resmi | `main` |
+| Status tersinkron sampai | `829e24b merge: style outlet delete action` |
 | Base branch standar | `main` |
 | Remote | `origin = https://github.com/henry1224/digital-bookkeeping.git` |
-| CI terakhir | Hijau, dikonfirmasi user: 43 tests, 146 assertions |
+| Validasi terakhir | Format, TypeScript, Outlet feature test (9 tests, 45 assertions), dan build hijau |
+| Terakhir disinkronkan | 16 Agustus 2026 |
 | Bahasa UI | Bahasa Indonesia untuk semua client-facing copy |
 
 ## MVP Roadmap Status
@@ -37,10 +38,11 @@ Dokumen ini menjadi papan status resmi proyek Digital Bookkeeping. Update setiap
 | Posting rules baseline | DONE | Rule dasar daily sale, PB1, receiving, payment, stock, manual journal | `f5889ca` | Runtime mapping transaksi belum dibuat. |
 | Journal engine | DONE | `CreateBalancedJournal`, debit=credit guard, audit log | `f5889ca` | Hitung uang pakai integer cents, bukan float. |
 | Audit log baseline | DONE | Table + model + journal audit write | `f5889ca` | Policy append-only belum dibuat. |
-| RBAC | IN_PROGRESS | Roles, permissions, matrix, middleware/policy | `features/phase-1/rbac` | Schema, seeder, model, dan Gate permission baseline selesai; menunggu commit. |
-| Outlet scoping | IN_PROGRESS | User-outlet access, policy/scope query | `features/phase-1/outlet-scoping` | User-outlet pivot, access helper, dan seeder baseline selesai; menunggu commit. |
+| RBAC | DONE | Roles, permissions, matrix, middleware/policy | `906ea35` | Sudah merge ke `main`. |
+| Outlet scoping | DONE | User-outlet access, policy/scope query | `809ec43` | Sudah merge ke `main`. |
 | File upload dasar | TODO | Storage config, upload validation, audit | - | Masuk foundation lanjutan bila modul dokumen butuh. |
-| Master Data UI | IN_PROGRESS | CRUD outlets, accounts, items, suppliers, bank accounts | `features/phase-1/outlet-scoping` | Outlet list/create/update/toggle aktif selesai; CRUD master data lain belum. |
+| Master Data UI | IN_PROGRESS | CRUD outlets, accounts, items, suppliers, bank accounts | `829e24b` | Outlet list/create/update/toggle/soft delete selesai; CRUD master data lain belum. |
+| Standar Admin UI | DONE | Page header, table filter, pagination, row action, confirm delete | `829e24b` | Komponen reusable dan design system sudah merge ke `main`. |
 | Daily Sales | TODO | Input/import ringkasan penjualan harian + journal | - | Kandidat modul transaksi pertama. |
 | Bank Book | TODO | Bank transactions, running balance, manual bank entry | - | Depend ke bank_accounts + journal. |
 | Payment Request | TODO | Supplier payment + non-stock expense | - | Butuh approval matrix. |
@@ -118,8 +120,8 @@ Gunakan checklist ini setiap modul baru.
 | Login UI polish | DONE | Brand Digital Bookkeeping. |
 | Git workflow | DONE | Standar `main`/`origin`/`features`. |
 | Bahasa Indonesia standard | DONE | Docs + locale + baseline auth UI. |
-| RBAC | IN_PROGRESS | Schema, seed, model, dan Gate permission baseline selesai; menunggu commit. |
-| Outlet scoping | IN_PROGRESS | User-outlet pivot, access helper, dan seeder baseline selesai; menunggu commit. |
+| RBAC | DONE | Schema, seed, model, dan Gate permission baseline sudah merge (`906ea35`). |
+| Outlet scoping | DONE | User-outlet pivot, access helper, dan seeder baseline sudah merge (`809ec43`). |
 | Audit log | DONE | Table/model + journal create log. |
 | File upload dasar | TODO | Belum. |
 
@@ -127,7 +129,7 @@ Gunakan checklist ini setiap modul baru.
 
 | Sub-item | Status | Catatan |
 |---|---|---|
-| Outlets | DONE | Schema/model/seeder + UI list paginated, create, update, toggle aktif; tanpa hard delete. |
+| Outlets | DONE | Schema/model/seeder + UI list, filter, create, update, toggle aktif, soft delete, dan audit log. |
 | Outlet configs | DONE | PB1 baseline. UI belum. |
 | Accounts/COA | DONE | Schema/model/seeder. UI belum. |
 | Item groups | DONE | Schema/model/seeder. UI belum. |
@@ -204,3 +206,5 @@ Gunakan checklist ini setiap modul baru.
 3. Jika scope berubah, update juga dokumen modul terkait.
 4. Jangan tandai `DONE` bila belum ada test/CI untuk modul non-trivial.
 5. Jika tertunda karena keputusan bisnis/akses/data, pakai `BLOCKED` dan tulis penyebab singkat.
+6. Branch yang mengubah status roadmap wajib memperbarui tracker pada branch yang sama sebelum commit.
+7. Ringkasan menyimpan baseline resmi `main`, bukan nama branch task sementara.
