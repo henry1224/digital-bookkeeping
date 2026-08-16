@@ -84,6 +84,7 @@
 11. Aksi tabel memakai satu `RowActionMenu`: **Lihat**, **Edit**, status, lalu **Hapus** paling bawah setelah pemisah.
 12. Aksi **Lihat** selalu tersedia. Aksi tambah, edit, status, dan hapus hanya tampil jika pengguna memiliki izin terkait.
 13. Data berinduk memakai tampilan tree: indentasi per tingkat, tombol buka/tutup pada induk, serta kontrol **Buka Semua** dan **Tutup Semua** di paling kiri baris filter.
+14. Pilihan form yang mengambil data dari database wajib memakai `AdminSearchSelect` agar pengguna dapat mencari berdasarkan kode atau nama. Select statis dengan sedikit pilihan tetap memakai native select.
 
 ## AdminDataDialog
 

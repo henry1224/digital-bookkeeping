@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Account;
+use App\Models\BankAccount;
 use App\Models\Item;
 use App\Models\ItemGroup;
 use App\Models\Outlet;
@@ -132,6 +134,18 @@ class MasterDataSeeder extends Seeder
                     'is_active' => true,
                 ],
             );
+        }
+
+        foreach ([
+            ['BANK-BCA-PUSAT', 'Bank BCA', '1234567890', 'PT Digital Bookkeeping', null],
+            ['BANK-BRI-BPN-A', 'Bank BRI', '020601000001', 'Outlet Balikpapan A', 'BPN-A'],
+            ['BANK-MANDIRI-BPN-B', 'Bank Mandiri', '148000000001', 'Outlet Balikpapan B', 'BPN-B'],
+        ] as [$code, $bankName, $accountNo, $accountName, $outletCode]) {
+            BankAccount::updateOrCreate(['code' => $code], [
+                'outlet_id' => $outletCode ? Outlet::where('code', $outletCode)->valueOrFail('id') : null,
+                'bank_name' => $bankName, 'account_no' => $accountNo, 'account_name' => $accountName,
+                'account_id' => Account::where('code', '1-1200')->valueOrFail('id'), 'is_active' => true,
+            ]);
         }
     }
 }

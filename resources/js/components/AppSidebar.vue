@@ -95,8 +95,8 @@ const sidebarNavGroups: SidebarNavGroup[] = [
             },
             {
                 title: 'Rekening Bank',
+                href: '/master-data/bank-accounts',
                 icon: Banknote,
-                badge: 'Segera',
             },
         ],
     },

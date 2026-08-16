@@ -17,6 +17,7 @@ import {
 import { computed, ref, watch } from 'vue';
 import AdminDataDialog from '@/components/admin/AdminDataDialog.vue';
 import AdminPageHeader from '@/components/admin/AdminPageHeader.vue';
+import AdminSearchSelect from '@/components/admin/AdminSearchSelect.vue';
 import DataTableCard from '@/components/admin/DataTableCard.vue';
 import DataTableFilterSelect from '@/components/admin/DataTableFilterSelect.vue';
 import DataTablePagination from '@/components/admin/DataTablePagination.vue';
@@ -137,6 +138,12 @@ const availableParents = computed(() =>
         (option) =>
             option.id !== editingAccount.value?.id && option.type === form.type,
     ),
+);
+const parentSelectOptions = computed(() =>
+    availableParents.value.map((option) => ({
+        value: String(option.id),
+        label: `${option.code} — ${option.name}`,
+    })),
 );
 type TreeAccount = Account & { treeDepth: number; childrenCount: number };
 const parentAccountIds = computed(() => {
@@ -804,20 +811,12 @@ defineOptions({
                     </div>
                     <div class="grid gap-2">
                         <Label for="parent_id">Akun Induk</Label
-                        ><select
-                            id="parent_id"
+                        ><AdminSearchSelect
                             v-model="form.parent_id"
-                            class="h-10 rounded-md border bg-background px-3 text-sm"
-                        >
-                            <option value="">Tidak ada</option>
-                            <option
-                                v-for="option in availableParents"
-                                :key="option.id"
-                                :value="String(option.id)"
-                            >
-                                {{ option.code }} — {{ option.name }}
-                            </option>
-                        </select>
+                            :options="parentSelectOptions"
+                            placeholder="Cari akun induk"
+                            empty-label="Tidak ada"
+                        />
                         <p
                             v-if="form.errors.parent_id"
                             class="text-sm text-destructive"

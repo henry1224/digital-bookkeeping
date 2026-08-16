@@ -14,6 +14,7 @@ import {
 import { computed, ref, watch } from 'vue';
 import AdminDataDialog from '@/components/admin/AdminDataDialog.vue';
 import AdminPageHeader from '@/components/admin/AdminPageHeader.vue';
+import AdminSearchSelect from '@/components/admin/AdminSearchSelect.vue';
 import DataTableCard from '@/components/admin/DataTableCard.vue';
 import DataTableFilterSelect from '@/components/admin/DataTableFilterSelect.vue';
 import DataTablePagination from '@/components/admin/DataTablePagination.vue';
@@ -115,6 +116,18 @@ const availableParents = computed(() =>
     props.parentOptions.filter(
         (option) => option.id !== editingGroup.value?.id,
     ),
+);
+const parentSelectOptions = computed(() =>
+    availableParents.value.map((option) => ({
+        value: String(option.id),
+        label: `${option.code} — ${option.name}`,
+    })),
+);
+const accountSelectOptions = computed(() =>
+    props.accountOptions.map((option) => ({
+        value: option.code,
+        label: `${option.code} — ${option.name}`,
+    })),
 );
 const accountLabel = (code: string | null) => {
     if (!code) {
@@ -556,20 +569,12 @@ defineOptions({
                 </div>
                 <div class="grid gap-2">
                     <Label for="parent_id">Kelompok Induk</Label>
-                    <select
-                        id="parent_id"
+                    <AdminSearchSelect
                         v-model="form.parent_id"
-                        class="h-10 rounded-md border bg-background px-3 text-sm"
-                    >
-                        <option value="">Tidak ada</option>
-                        <option
-                            v-for="option in availableParents"
-                            :key="option.id"
-                            :value="String(option.id)"
-                        >
-                            {{ option.code }} — {{ option.name }}
-                        </option>
-                    </select>
+                        :options="parentSelectOptions"
+                        placeholder="Cari kelompok induk"
+                        empty-label="Tidak ada"
+                    />
                     <p
                         v-if="form.errors.parent_id"
                         class="text-sm text-destructive"
@@ -582,20 +587,12 @@ defineOptions({
                         <Label for="inventory_account_code"
                             >Akun Persediaan</Label
                         >
-                        <select
-                            id="inventory_account_code"
+                        <AdminSearchSelect
                             v-model="form.inventory_account_code"
-                            class="h-10 rounded-md border bg-background px-3 text-sm"
-                        >
-                            <option value="">Belum ditentukan</option>
-                            <option
-                                v-for="option in accountOptions"
-                                :key="option.code"
-                                :value="option.code"
-                            >
-                                {{ option.code }} — {{ option.name }}
-                            </option>
-                        </select>
+                            :options="accountSelectOptions"
+                            placeholder="Cari akun persediaan"
+                            empty-label="Belum ditentukan"
+                        />
                         <p
                             v-if="form.errors.inventory_account_code"
                             class="text-sm text-destructive"
@@ -607,20 +604,12 @@ defineOptions({
                         <Label for="revenue_account_code"
                             >Akun Pendapatan</Label
                         >
-                        <select
-                            id="revenue_account_code"
+                        <AdminSearchSelect
                             v-model="form.revenue_account_code"
-                            class="h-10 rounded-md border bg-background px-3 text-sm"
-                        >
-                            <option value="">Belum ditentukan</option>
-                            <option
-                                v-for="option in accountOptions"
-                                :key="option.code"
-                                :value="option.code"
-                            >
-                                {{ option.code }} — {{ option.name }}
-                            </option>
-                        </select>
+                            :options="accountSelectOptions"
+                            placeholder="Cari akun pendapatan"
+                            empty-label="Belum ditentukan"
+                        />
                         <p
                             v-if="form.errors.revenue_account_code"
                             class="text-sm text-destructive"
