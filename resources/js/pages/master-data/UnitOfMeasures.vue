@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { Head, router, useForm } from '@inertiajs/vue3';
+import { Head, router, useForm, usePage } from '@inertiajs/vue3';
 import {
+    Eye,
     Pencil,
     Plus,
     Power,
@@ -16,7 +17,7 @@ import DataTableCard from '@/components/admin/DataTableCard.vue';
 import DataTableFilterSelect from '@/components/admin/DataTableFilterSelect.vue';
 import DataTablePagination from '@/components/admin/DataTablePagination.vue';
 import DataTableSearch from '@/components/admin/DataTableSearch.vue';
-import RowActionButton from '@/components/admin/RowActionButton.vue';
+import RowActionMenu from '@/components/admin/RowActionMenu.vue';
 import ConfirmDeleteDialog from '@/components/ConfirmDeleteDialog.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -28,8 +29,13 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import {
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { formatDate } from '@/lib/date';
 import { useDebounceFn } from '@/lib/debounce';
 
 type UnitOfMeasure = {
@@ -52,6 +58,7 @@ type PageLink = {
 type UnitFilters = {
     search: string;
     status: string;
+    per_page: string;
 };
 
 type CancelToken = {
@@ -69,9 +76,18 @@ const props = defineProps<{
     };
 }>();
 
+const page = usePage();
+const canCreate = computed(() =>
+    page.props.auth.permissions.includes('master-data.create'),
+);
+const canUpdate = computed(() =>
+    page.props.auth.permissions.includes('master-data.update'),
+);
 const search = ref(props.filters.search);
 const filterStatus = ref(props.filters.status ?? 'semua');
+const perPage = ref(props.filters.per_page ?? '10');
 const dialogOpen = ref(false);
+const viewingUnit = ref<UnitOfMeasure | null>(null);
 const editingUnit = ref<UnitOfMeasure | null>(null);
 const deletingUnit = ref<UnitOfMeasure | null>(null);
 const deleteProcessing = ref(false);
@@ -86,7 +102,10 @@ const form = useForm({
 });
 
 const hasActiveFilters = computed(
-    () => search.value !== '' || filterStatus.value !== 'semua',
+    () =>
+        search.value !== '' ||
+        filterStatus.value !== 'semua' ||
+        perPage.value !== '10',
 );
 const deleteDialogOpen = computed({
     get: () => deletingUnit.value !== null,
@@ -97,11 +116,20 @@ const deleteDialogOpen = computed({
         }
     },
 });
+const viewDialogOpen = computed({
+    get: () => viewingUnit.value !== null,
+    set: (open) => {
+        if (!open) {
+            viewingUnit.value = null;
+        }
+    },
+});
 
 const activeFilters = (overrides: Partial<UnitFilters> = {}) => {
     const filters = {
         search: search.value,
         status: filterStatus.value,
+        per_page: perPage.value,
         ...overrides,
     };
 
@@ -163,6 +191,10 @@ const applyFilters = (
         filterStatus.value = overrides.status ?? 'semua';
     }
 
+    if (Object.prototype.hasOwnProperty.call(overrides, 'per_page')) {
+        perPage.value = overrides.per_page ?? '10';
+    }
+
     if (immediate) {
         requestFilters.cancel();
         visitFilters(overrides);
@@ -178,7 +210,8 @@ const clearSearch = () => {
     applyFilters({ search: '' }, true);
 };
 
-const resetFilters = () => applyFilters({ search: '', status: 'semua' }, true);
+const resetFilters = () =>
+    applyFilters({ search: '', status: 'semua', per_page: '10' }, true);
 
 const openCreate = () => {
     editingUnit.value = null;
@@ -208,6 +241,10 @@ const openEdit = (unit: UnitOfMeasure) => {
     form.reset();
     form.clearErrors();
     dialogOpen.value = true;
+};
+
+const openView = (unit: UnitOfMeasure) => {
+    viewingUnit.value = unit;
 };
 
 const submit = () => {
@@ -262,13 +299,6 @@ const confirmDelete = () => {
 const formatFactor = (factor: string) =>
     Number(factor).toLocaleString('id-ID', { maximumFractionDigits: 6 });
 
-const formatUpdatedAt = (value: string) =>
-    new Intl.DateTimeFormat('id-ID', {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-        timeZone: 'Asia/Makassar',
-    }).format(new Date(value));
-
 watch(search, (value) => {
     if (skipNextSearchWatch) {
         skipNextSearchWatch = false;
@@ -296,10 +326,10 @@ defineOptions({
         <AdminPageHeader
             eyebrow="Master Data"
             title="Satuan (UOM)"
-            description="Kelola satuan dasar dan faktor konversi untuk item, pembelian, serta pergerakan stok."
+            description="Atur satuan yang digunakan untuk barang, pembelian, dan pencatatan stok."
         >
             <template #actions>
-                <Button @click="openCreate">
+                <Button v-if="canCreate" @click="openCreate">
                     <Plus class="size-4" />
                     Tambah Satuan
                 </Button>
@@ -311,6 +341,15 @@ defineOptions({
             description="Satuan yang sudah dipakai item tetap tersimpan dan tidak dapat dihapus."
         >
             <template #filters>
+                <DataTableFilterSelect
+                    v-model="perPage"
+                    label="Jumlah data per halaman"
+                    @change="applyFilters({ per_page: $event }, true)"
+                >
+                    <option value="10">10 data</option>
+                    <option value="25">25 data</option>
+                    <option value="50">50 data</option>
+                </DataTableFilterSelect>
                 <DataTableSearch
                     v-model="search"
                     class="w-full sm:max-w-sm"
@@ -375,8 +414,7 @@ defineOptions({
                             {{ unit.name }}
                         </div>
                         <div class="text-xs text-muted-foreground">
-                            Diperbarui
-                            {{ formatUpdatedAt(unit.updated_at) }} WITA
+                            Diperbarui {{ formatDate(unit.updated_at) }}
                         </div>
                     </td>
                     <td class="px-4 py-3 text-muted-foreground">
@@ -399,35 +437,44 @@ defineOptions({
                         </Badge>
                     </td>
                     <td class="px-4 py-3 text-right">
-                        <div class="flex justify-end gap-2">
-                            <RowActionButton
-                                label="Edit satuan"
-                                @click="openEdit(unit)"
-                            >
-                                <Pencil class="size-3.5" />
-                            </RowActionButton>
-                            <RowActionButton
-                                :label="
-                                    unit.is_active
-                                        ? 'Nonaktifkan satuan'
-                                        : 'Aktifkan satuan'
-                                "
-                                :intent="unit.is_active ? 'warning' : 'success'"
-                                @click="toggleUnit(unit)"
-                            >
-                                <PowerOff
-                                    v-if="unit.is_active"
-                                    class="size-3.5"
-                                />
-                                <Power v-else class="size-3.5" />
-                            </RowActionButton>
-                            <RowActionButton
-                                label="Hapus satuan"
-                                intent="danger"
-                                @click="deleteUnit(unit)"
-                            >
-                                <Trash2 class="size-3.5" />
-                            </RowActionButton>
+                        <div class="flex justify-end">
+                            <RowActionMenu>
+                                <DropdownMenuItem @select="openView(unit)">
+                                    <Eye class="size-4" />
+                                    Lihat
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    v-if="canUpdate"
+                                    @select="openEdit(unit)"
+                                >
+                                    <Pencil class="size-4" />
+                                    Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    v-if="canUpdate"
+                                    @select="toggleUnit(unit)"
+                                >
+                                    <PowerOff
+                                        v-if="unit.is_active"
+                                        class="size-4"
+                                    />
+                                    <Power v-else class="size-4" />
+                                    {{
+                                        unit.is_active
+                                            ? 'Nonaktifkan'
+                                            : 'Aktifkan'
+                                    }}
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator v-if="canUpdate" />
+                                <DropdownMenuItem
+                                    v-if="canUpdate"
+                                    variant="destructive"
+                                    @select="deleteUnit(unit)"
+                                >
+                                    <Trash2 class="size-4" />
+                                    Hapus
+                                </DropdownMenuItem>
+                            </RowActionMenu>
                         </div>
                     </td>
                 </tr>
@@ -450,6 +497,62 @@ defineOptions({
                 />
             </template>
         </DataTableCard>
+
+        <Dialog v-model:open="viewDialogOpen">
+            <DialogContent class="sm:max-w-lg">
+                <DialogHeader>
+                    <DialogTitle>Detail Satuan</DialogTitle>
+                    <DialogDescription>
+                        Informasi lengkap satuan yang dipilih.
+                    </DialogDescription>
+                </DialogHeader>
+
+                <dl v-if="viewingUnit" class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <dt class="text-xs text-muted-foreground">Kode</dt>
+                        <dd class="font-medium">{{ viewingUnit.code }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs text-muted-foreground">Nama</dt>
+                        <dd class="font-medium">{{ viewingUnit.name }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs text-muted-foreground">
+                            Satuan Dasar
+                        </dt>
+                        <dd>{{ viewingUnit.base_code }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs text-muted-foreground">Faktor</dt>
+                        <dd>{{ formatFactor(viewingUnit.factor) }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs text-muted-foreground">
+                            Digunakan oleh
+                        </dt>
+                        <dd>{{ viewingUnit.items_count }} barang</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs text-muted-foreground">Status</dt>
+                        <dd>
+                            {{ viewingUnit.is_active ? 'Aktif' : 'Nonaktif' }}
+                        </dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs text-muted-foreground">
+                            Terakhir Diperbarui
+                        </dt>
+                        <dd>{{ formatDate(viewingUnit.updated_at) }}</dd>
+                    </div>
+                </dl>
+
+                <DialogFooter>
+                    <Button variant="outline" @click="viewDialogOpen = false">
+                        Tutup
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
 
         <Dialog v-model:open="dialogOpen">
             <DialogContent class="sm:max-w-lg">
@@ -572,7 +675,7 @@ defineOptions({
             "
             :note="
                 deleteError ||
-                'Aksi memakai soft delete, tercatat di audit log, dan ditolak jika satuan masih dipakai item.'
+                'Satuan tidak dapat dihapus jika masih digunakan oleh barang.'
             "
             :processing="deleteProcessing"
             @confirm="confirmDelete"

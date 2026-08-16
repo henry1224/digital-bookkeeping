@@ -21,9 +21,10 @@ class UnitOfMeasureController extends Controller
         $search = trim((string) $request->query('search'));
         $statusQuery = $request->query('status');
         $status = is_string($statusQuery) && in_array($statusQuery, ['aktif', 'nonaktif'], true) ? $statusQuery : 'semua';
+        $perPage = in_array((int) $request->query('per_page'), [10, 25, 50], true) ? (int) $request->query('per_page') : 10;
 
         return Inertia::render('master-data/UnitOfMeasures', [
-            'filters' => ['search' => $search, 'status' => $status],
+            'filters' => ['search' => $search, 'status' => $status, 'per_page' => (string) $perPage],
             'units' => UnitOfMeasure::query()
                 ->withCount('items')
                 ->when($search !== '', fn ($query) => $query->where(function ($query) use ($search) {
@@ -34,7 +35,7 @@ class UnitOfMeasureController extends Controller
                 ->when($status === 'aktif', fn ($query) => $query->where('is_active', true))
                 ->when($status === 'nonaktif', fn ($query) => $query->where('is_active', false))
                 ->orderBy('code')
-                ->paginate(10)
+                ->paginate($perPage)
                 ->withQueryString()
                 ->through(fn (UnitOfMeasure $unit): array => [
                     'id' => $unit->id,

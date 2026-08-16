@@ -22,9 +22,10 @@ class OutletController extends Controller
         $typeQuery = $request->query('type');
         $status = is_string($statusQuery) && in_array($statusQuery, ['aktif', 'nonaktif'], true) ? $statusQuery : 'semua';
         $type = is_string($typeQuery) && in_array($typeQuery, ['outlet', 'central_kitchen'], true) ? $typeQuery : 'semua';
+        $perPage = in_array((int) $request->query('per_page'), [10, 25, 50], true) ? (int) $request->query('per_page') : 10;
 
         return Inertia::render('master-data/Outlets', [
-            'filters' => ['search' => $search, 'status' => $status, 'type' => $type],
+            'filters' => ['search' => $search, 'status' => $status, 'type' => $type, 'per_page' => (string) $perPage],
             'outlets' => Outlet::query()
                 ->when($search !== '', fn ($query) => $query->where(function ($query) use ($search) {
                     $query->where('code', 'like', "%{$search}%")
@@ -34,7 +35,7 @@ class OutletController extends Controller
                 ->when($status === 'nonaktif', fn ($query) => $query->where('is_active', false))
                 ->when($type !== 'semua', fn ($query) => $query->where('outlet_type', $type))
                 ->orderBy('code')
-                ->paginate(10)
+                ->paginate($perPage)
                 ->withQueryString()
                 ->through(fn (Outlet $outlet): array => [
                     'id' => $outlet->id,
